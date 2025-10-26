@@ -1,111 +1,62 @@
-# 🧭 Dairy Saathi - Config-Driven Multi-Farm Landing Page System
+🧭 Dairy Saathi
+Config-Driven Multi-Farm Landing Page Platform
 
-A scalable, future-proof web platform where multiple dairy farms share a unified Next.js 14 codebase, each with unique themes, imagery, and layouts—all powered by JSON configuration.
+A scalable, future-proof web framework enabling multiple dairy farms to share a unified Next.js 14 codebase—while each farm enjoys a distinct theme, layout, and identity, powered entirely by configuration.
 
-## 🌟 Features
+🌟 Overview
+✨ Core Principles
 
-### Core Architecture
-- **Config-Driven Design**: Each farm defined by a JSON config file
-- **Section Registry Pattern**: Modular, reusable section components
-- **Dynamic Theme System**: Per-farm color schemes, fonts, and styling
-- **Variant Support**: Multiple layout variants per section type
-- **Server-Side Rendering**: Next.js 14 App Router for optimal performance
+Config-Driven UI – Each farm is fully defined by a JSON configuration (layout, theme, and content sections).
 
-### Built-In Sections
-1. **Hero** - Image-left/right/centered variants with CTAs
-2. **Products** - Grid/carousel/list layouts for dairy products
-3. **Locations** - Map integration for pickup/store finder
-4. **Event Share** - Social media integration and community engagement
-5. **Distributor** - B2B signup forms with benefits showcase
+Composable Sections – A section registry enables mix-and-match layouts (Hero, Products, etc.) with pluggable variants.
 
-### Tech Stack
-- **Frontend**: Next.js 14 (App Router), TypeScript, React 18
-- **Styling**: Tailwind CSS + shadcn/ui components
-- **Animations**: Framer Motion
-- **Backend**: Next.js API Routes
-- **Database**: MongoDB (ready for integration)
-- **Deployment**: Vercel-ready
+Dynamic Theming – Per-farm color palettes, fonts, and border radii applied through React context.
 
----
+Layout Variants – Sections can have multiple design and animation styles.
 
-## 🚀 Quick Start
+Full SSR/ISR – Built on Next.js App Router for speed and SEO.
 
-### Installation
+🧱 Architecture & Tech Stack
+Layer	Tech	Purpose
+Frontend	Next.js 14 (App Router), React 18, TypeScript	Core UI rendering
+Styling	Tailwind CSS + shadcn/ui + Framer Motion	Theming, components, animations
+Backend	Next.js API Routes	Config + mock endpoints
+Database (Future)	MongoDB	Content persistence
+Deployment	Vercel	Zero-config hosting and per-domain mapping
+🗂 Project Structure
+app/
+├── [farmSlug]/page.tsx         # Dynamic renderer for farm pages
+├── layout.tsx                  # Global layout
+├── globals.css                 # Tailwind & base styles
+├── api/[[...path]]/route.ts    # API routes
+├── farms/                      # Farm-specific configs
+│   └── farmer-joe/
+│       ├── config.json
+│       └── theme.ts
+components/
+├── sections/                   # Modular content blocks
+│   ├── hero/
+│   ├── products/
+│   ├── locations/
+│   ├── event-share/
+│   ├── distributor/
+│   └── registry.ts
+├── layout/                     # Header, Footer
+└── ui/                         # shadcn primitives
+lib/
+├── contexts/FarmContext.tsx    # Provides farm theme/config
+├── types/farm.ts               # TypeScript interfaces
+├── db.ts                       # MongoDB connector (optional)
+└── utils.ts                    # Shared helpers
 
-```bash
-# Install dependencies
-yarn install
+⚙️ Config System
 
-# Start development server
-yarn dev
+Each farm lives in /app/farms/{farmSlug}/config.json:
 
-# Build for production
-yarn build
-```
-
-### Access Points
-- **Home**: `http://localhost:3000` - Farm directory
-- **Farmer Joe**: `http://localhost:3000/farmer-joe` - Live demo farm
-- **API**: `http://localhost:3000/api/farms/{farmSlug}` - Farm config endpoint
-
----
-
-## 📁 Project Structure
-
-```
-/app
-├── app/
-│   ├── [farmSlug]/page.tsx       # Dynamic farm renderer
-│   ├── page.tsx                   # Home/directory page
-│   ├── layout.tsx                 # Root layout
-│   ├── globals.css                # Global styles
-│   ├── api/[[...path]]/route.ts   # API routes
-│   └── farms/                     # Farm configurations
-│       └── farmer-joe/
-│           ├── config.json        # Farm config
-│           └── theme.ts           # Theme definition
-│
-├── components/
-│   ├── sections/                  # Content sections
-│   │   ├── hero/
-│   │   ├── products/
-│   │   ├── locations/
-│   │   ├── event-share/
-│   │   ├── distributor/
-│   │   └── registry.ts            # Section registry
-│   ├── layout/                    # Header/Footer
-│   │   ├── Header.tsx
-│   │   └── Footer.tsx
-│   └── ui/                        # shadcn components
-│       ├── button.tsx
-│       ├── card.tsx
-│       ├── input.tsx
-│       └── textarea.tsx
-│
-├── lib/
-│   ├── types/
-│   │   └── farm.ts                # TypeScript interfaces
-│   ├── contexts/
-│   │   └── FarmContext.tsx        # Farm config provider
-│   ├── db.ts                      # MongoDB connection
-│   └── utils.ts                   # Utility functions
-│
-└── package.json
-```
-
----
-
-## ⚙️ Configuration System
-
-### Farm Config Structure
-
-Each farm is defined in `/app/farms/{farmSlug}/config.json`:
-
-```json
 {
   "farmSlug": "farmer-joe",
   "name": "Farmer Joe's Dairy",
-  "tagline": "No Kill, No Soy, No Corn, No Silage - No Bullshit",
+  "tagline": "No Kill, No Soy, No Corn, No Silage – No Bullshit",
   "domain": "farmerjoe.com",
   "layout": "boxed",
   "sections": [
@@ -136,292 +87,123 @@ Each farm is defined in `/app/farms/{farmSlug}/config.json`:
     "youtube": "Farmer Joe Stories"
   }
 }
-```
 
-### Section Variants
+🧩 Section System
+Section	Variants	Description
+Hero	image-left, image-right, centered	Configurable CTAs and imagery
+Products	grid, carousel, list	Product presentation layouts
+Locations	map, list	Pickup / store finder (distance-sorted)
+Event Share	card, inline	User-submitted social posts
+Distributor	form, compact	B2B onboarding
 
-**Hero Section**:
-- `image-left` - Image on left, content on right
-- `image-right` - Image on right, content on left
-- `centered` - Centered content with background
+Each section component reads variant-specific props and renders accordingly.
+Animations and filler assets (illustrations, motion effects, decorative icons) are registered per variant—allowing radically different visual expressions without code duplication.
 
-**Products Section**:
-- `grid` - Product grid layout (6 columns)
-- `carousel` - Scrollable carousel
-- `list` - Vertical list layout
-
-**Locations Section**:
-- `map` - Interactive map with search
-- `list` - Simple location list
-
-**Event Share Section**:
-- `card` - Card-based social sharing
-- `inline` - Compact inline form
-
-**Distributor Section**:
-- `form` - Full application form with benefits
-- `compact` - Minimal signup form
-
----
-
-## 🎨 Theme System
-
-Themes are applied dynamically using inline styles and the FarmContext:
-
-```tsx
+🎨 Theme Context Example
 import { useFarm } from '@/lib/contexts/FarmContext';
 
-function MyComponent() {
+export function Banner() {
   const { config } = useFarm();
-  const theme = config.theme;
-  
+  const { colors, fontDisplay } = config.theme;
+
   return (
-    <div style={{ backgroundColor: theme.colors.primary }}>
-      <h1 style={{ fontFamily: theme.fontDisplay }}>
-        {config.name}
-      </h1>
+    <div style={{ backgroundColor: colors.primary }}>
+      <h1 style={{ fontFamily: fontDisplay }}>{config.name}</h1>
     </div>
   );
 }
-```
 
----
+🔌 API Endpoints
+Method	Endpoint	Purpose
+GET	/api/farms/:farmSlug	Retrieve farm config
+GET	/api/products?farmSlug=x	Fetch products
+GET	/api/locations?farmSlug=x	Fetch store/pickup points (sorted by nearest distance)
+POST	/api/distributor-signup	Submit distributor application
+POST	/api/event-share	Submit shared experience
 
-## 🔌 API Endpoints
+Location Finder:
+User inputs their full address (autofilled via browser geolocation + Google Places) — nearest locations are calculated client-side for now.
 
-### GET `/api/farms/:farmSlug`
-Returns farm configuration
+🛠️ Adding a New Farm
 
-**Response:**
-```json
-{
-  "farmSlug": "farmer-joe",
-  "name": "Farmer Joe's Dairy",
-  "sections": [...],
-  "theme": {...}
-}
-```
+Create directory:
 
-### GET `/api/products?farmSlug=farmer-joe`
-Returns farm products
+mkdir app/farms/sunshine-dairy
 
-### GET `/api/locations?farmSlug=farmer-joe`
-Returns pickup/store locations
 
-### POST `/api/distributor-signup`
-Submit distributor application
+Add config.json + optional theme.ts.
 
-**Body:**
-```json
-{
-  "businessName": "ABC Distributors",
-  "contactName": "John Doe",
-  "email": "john@abc.com",
-  "phone": "(555) 123-4567",
-  "location": "Chicago, IL",
-  "message": "Interested in partnership"
-}
-```
+Register in API route (if needed).
 
-### POST `/api/event-share`
-Submit event/experience share
+Access via http://localhost:3000/sunshine-dairy.
 
----
+🧪 Development Flow
+Add a New Section
+mkdir components/sections/testimonial
+touch components/sections/testimonial/Testimonial.tsx
 
-## 🧩 Adding a New Farm
-
-1. **Create farm directory**:
-```bash
-mkdir app/farms/new-farm
-```
-
-2. **Create config file** (`app/farms/new-farm/config.json`):
-```json
-{
-  "farmSlug": "new-farm",
-  "name": "New Farm Dairy",
-  "tagline": "Fresh & Local",
-  "sections": [...],
-  "theme": {...}
-}
-```
-
-3. **Update API route** (`app/api/[[...path]]/route.ts`):
-```typescript
-const farmConfigs: Record<string, any> = {
-  'farmer-joe': { /* ... */ },
-  'new-farm': { /* ... */ },
-};
-```
-
-4. **Access**: Navigate to `http://localhost:3000/new-farm`
-
----
-
-## 🛠️ Development
-
-### Adding New Sections
-
-1. **Create section component**:
-```bash
-mkdir components/sections/my-section
-touch components/sections/my-section/MySection.tsx
-```
-
-2. **Implement component**:
-```tsx
-import { useFarm } from '@/lib/contexts/FarmContext';
-
-export function MySection({ variant, data }) {
-  const { config } = useFarm();
-  // Component logic
+export function Testimonial({ variant, data }) {
+  // logic
   return <section>...</section>;
 }
-```
 
-3. **Register in registry** (`components/sections/registry.ts`):
-```typescript
-import { MySection } from './my-section/MySection';
+
+Register it:
+
+import { Testimonial } from './testimonial/Testimonial';
 
 export const SectionRegistry = {
-  // ... existing sections
-  mySection: MySection,
+  ...,
+  testimonial: Testimonial
 };
-```
 
-4. **Use in farm config**:
-```json
-{
-  "sections": [
-    { "type": "mySection", "variant": "default" }
-  ]
-}
-```
 
----
+Use in a farm config:
 
-## 🎯 Roadmap
+{ "type": "testimonial", "variant": "carousel" }
 
-### Phase 1 (Current) ✅
-- Config-driven architecture
-- 5 core sections (Hero, Products, Locations, Event Share, Distributor)
-- Dynamic theming
-- Farmer Joe demo farm
+🗺️ Roadmap
+Phase	Goals
+1️⃣ Current	Config architecture, 5 base sections, theming, Farmer Joe demo
+2️⃣ Next	Google Maps API, Firestore/Firebase forms, new “About” & “Story” sections
+3️⃣ Future	Multi-language support, E-commerce, Blog, Admin config editor, Analytics
+🚀 Deployment
+Vercel (Recommended)
+yarn build && vercel
 
-### Phase 2 (Next)
-- Google Maps API integration
-- Firebase/Firestore for form submissions
-- About/Story section
-- Testimonials section
-- Cow Sanctuary section
 
-### Phase 3 (Future)
-- Multi-language support
-- E-commerce integration
-- Blog/News section
-- Admin dashboard for config management
-- Analytics integration
+Environment Variables:
 
----
-
-## 📦 Dependencies
-
-### Core
-- **next**: 14.2.3
-- **react**: 18
-- **typescript**: 5.9.3
-- **tailwindcss**: 3.4.1
-
-### UI Components
-- **@radix-ui/react-\***: shadcn/ui primitives
-- **lucide-react**: Icon library
-- **framer-motion**: Animations
-
-### Backend
-- **mongodb**: 6.6.0 (for future integration)
-
----
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-```bash
-# Build
-yarn build
-
-# Deploy
-vercel
-
-# Add environment variables in Vercel dashboard:
-# - MONGO_URL
-# - NEXT_PUBLIC_BASE_URL
-```
-
-### Custom Domains
-Configure in Vercel:
-- `farmerjoe.com` → `/farmer-joe`
-- `invictusdairy.com` → `/invictus`
-- `gokuldairy.com` → `/gokul`
-
----
-
-## 🔐 Environment Variables
-
-Create `.env` file:
-
-```bash
-# MongoDB Connection
 MONGO_URL=mongodb://localhost:27017/dairy-saathi
-
-# Base URL
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
-
-# Google Maps (optional)
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_key_here
 
-# Firebase (optional)
-NEXT_PUBLIC_FIREBASE_API_KEY=your_key_here
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-```
 
----
+Domain mapping in Vercel:
 
-## 🧪 Testing
+farmerjoe.com → /farmer-joe
+invictusdairy.com → /invictus
+gokuldairy.com → /gokul
 
-```bash
-# Run development server
-yarn dev
+📦 Dependencies
 
-# Test API endpoints
-curl http://localhost:3000/api/farms/farmer-joe
+Core: Next 14, React 18, TypeScript 5.9
 
-# Test farm page
-open http://localhost:3000/farmer-joe
-```
+Styling: Tailwind CSS 3.4, shadcn/ui, Framer Motion
 
----
+UI Tools: Radix UI, Lucide Icons
 
-## 📝 License
+Data (optional): MongoDB 6.6
 
-Proprietary - All rights reserved
+👥 Credits
 
----
+Built with ❤️ for ethical dairy farming.
+Flagship demo: Farmer Joe’s Dairy — showcasing cruelty-free, grass-fed, A2 milk practices.
 
-## 👥 Credits
+📧 support@dairysaathi.com
 
-Built with ❤️ for ethical dairy farming
+🔗 GitHub Issues — coming soon
 
-**Farmer Joe's Dairy** - Our flagship demo farm showcasing premium A2 milk products with no-kill, grass-fed practices.
+🧾 License
 
----
-
-## 📞 Support
-
-For questions or issues:
-- Email: support@dairysaathi.com
-- GitHub Issues: [Create an issue](#)
-
----
-
-**Note**: This is a config-driven system. Mock data is currently used for demonstration. Connect to your NestJS backend or Firebase for production use.
+Proprietary – All Rights Reserved

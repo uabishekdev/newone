@@ -5,22 +5,55 @@
   "domain": "farmerjoe.com",
   "layout": "boxed",
   "sections": [
-    { "type": "hero", "variant": "image-left" },
-    { "type": "products", "variant": "grid" },
-    { "type": "locations", "variant": "map" },
-    { "type": "eventShare", "variant": "card" },
-    { "type": "distributor", "variant": "form" }
+    { "type": "hero", "variant": "centered", "props": { "fullHeight": false, "spacing": "compact" } },
+    { "type": "products", "variant": "carousel", "props": { 
+      "maxWidth": "container", 
+      "padding": "medium",
+      "imageSize": "small",
+      "itemsPerRow": 4,
+      "showArrows": true,
+      "autoplay": true
+    }},
+    { "type": "locations", "variant": "map", "props": { "maxWidth": "narrow", "spacing": "medium" } },
+    { "type": "eventShare", "variant": "card", "props": { "maxWidth": "narrow", "spacing": "medium" } },
+    { "type": "distributor", "variant": "form", "props": { "maxWidth": "narrow", "spacing": "medium" } }
   ],
   "theme": {
     "colors": {
       "primary": "#D2691E",
       "secondary": "#5E9A5C",
       "cream": "#FCFCF9",
-      "brown": "#5E5240"
+      "brown": "#5E5240",
+      "background": "#FFFFFF",
+      "surface": "#F8F9FA"
     },
     "fontFamily": "Inter, sans-serif",
     "fontDisplay": "Poppins, sans-serif",
-    "borderRadius": "12px"
+    "borderRadius": "16px",
+    "spacing": {
+      "section": {
+        "compact": "3rem",
+        "medium": "4rem",
+        "large": "6rem"
+      },
+      "container": {
+        "small": "1rem",
+        "medium": "2rem",
+        "large": "3rem"
+      }
+    },
+    "maxWidth": {
+      "narrow": "800px",
+      "container": "1200px",
+      "wide": "1400px"
+    },
+    "layout": {
+      "productImage": {
+        "small": "120px",
+        "medium": "180px",
+        "large": "240px"
+      }
+    }
   },
   "contact": {
     "email": "hello@farmerjoe.com",
