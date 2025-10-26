@@ -1,0 +1,34 @@
+{
+  "farmSlug": "farmer-joe",
+  "name": "Farmer Joe's Dairy",
+  "tagline": "No Kill, No Soy, No Corn, No Silage - No Bullshit",
+  "domain": "farmerjoe.com",
+  "layout": "boxed",
+  "sections": [
+    { "type": "hero", "variant": "image-left" },
+    { "type": "products", "variant": "grid" },
+    { "type": "locations", "variant": "map" },
+    { "type": "eventShare", "variant": "card" },
+    { "type": "distributor", "variant": "form" }
+  ],
+  "theme": {
+    "colors": {
+      "primary": "#D2691E",
+      "secondary": "#5E9A5C",
+      "cream": "#FCFCF9",
+      "brown": "#5E5240"
+    },
+    "fontFamily": "Inter, sans-serif",
+    "fontDisplay": "Poppins, sans-serif",
+    "borderRadius": "12px"
+  },
+  "contact": {
+    "email": "hello@farmerjoe.com",
+    "phone": "(555) 123-MILK"
+  },
+  "social": {
+    "instagram": "@farmerjoe_dairy",
+    "facebook": "Farmer Joe Dairy",
+    "youtube": "Farmer Joe Stories"
+  }
+}
