@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Building2, Mail, Phone, MapPin } from 'lucide-react';
+import { Building2, Mail, Phone, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface DistributorSectionProps {
@@ -30,7 +30,6 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Distributor signup:', formData);
-    // Mock API call
     alert('Thank you! We will contact you soon.');
     setFormData({ businessName: '', contactName: '', email: '', phone: '', location: '', message: '' });
   };
@@ -38,7 +37,7 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
   if (variant === 'form') {
     return (
       <section 
-        className="py-20"
+        className="py-12 md:py-20"
         style={{ backgroundColor: theme.colors.secondary + '15' }}
       >
         <div className="container mx-auto px-4">
@@ -46,10 +45,10 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8 md:mb-12"
           >
             <h2 
-              className="text-5xl font-bold mb-4"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
               style={{ 
                 fontFamily: theme.fontDisplay,
                 color: theme.colors.brown 
@@ -57,62 +56,62 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
             >
               Become a Distributor
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join our network of ethical dairy distributors and bring {config.name} products to your community
+            <p className="text-base md:text-xl text-gray-600 max-w-3xl mx-auto">
+              Join our network and bring {config.name} products to your community
             </p>
           </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-6 md:gap-12 max-w-6xl mx-auto">
             {/* Left - Benefits */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="space-y-6"
+              className="space-y-4 md:space-y-6"
             >
               <Card className="border-0 shadow-lg">
-                <CardContent className="p-8">
-                  <Building2 size={48} className="mb-4" style={{ color: theme.colors.primary }} />
-                  <h3 className="text-2xl font-bold mb-3" style={{ color: theme.colors.brown }}>
+                <CardContent className="p-6 md:p-8">
+                  <Building2 size={40} className="mb-4" style={{ color: theme.colors.primary }} />
+                  <h3 className="text-xl md:text-2xl font-bold mb-4" style={{ color: theme.colors.brown }}>
                     Why Partner With Us?
                   </h3>
-                  <ul className="space-y-3 text-gray-700">
+                  <ul className="space-y-3 text-sm md:text-base text-gray-700">
                     <li className="flex items-start gap-3">
-                      <span className="text-2xl" style={{ color: theme.colors.secondary }}>✓</span>
+                      <CheckCircle size={20} className="flex-shrink-0 mt-0.5" style={{ color: theme.colors.secondary }} />
                       <span>Premium quality raw A2 milk products</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-2xl" style={{ color: theme.colors.secondary }}>✓</span>
-                      <span>No kill, no corn, no soy - ethical farming practices</span>
+                      <CheckCircle size={20} className="flex-shrink-0 mt-0.5" style={{ color: theme.colors.secondary }} />
+                      <span>Ethical farming - no kill, no corn, no soy</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-2xl" style={{ color: theme.colors.secondary }}>✓</span>
+                      <CheckCircle size={20} className="flex-shrink-0 mt-0.5" style={{ color: theme.colors.secondary }} />
                       <span>Competitive distributor pricing</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-2xl" style={{ color: theme.colors.secondary }}>✓</span>
-                      <span>Marketing and promotional support</span>
+                      <CheckCircle size={20} className="flex-shrink-0 mt-0.5" style={{ color: theme.colors.secondary }} />
+                      <span>Marketing & promotional support</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-2xl" style={{ color: theme.colors.secondary }}>✓</span>
-                      <span>Growing demand for clean dairy products</span>
+                      <CheckCircle size={20} className="flex-shrink-0 mt-0.5" style={{ color: theme.colors.secondary }} />
+                      <span>Growing demand for clean dairy</span>
                     </li>
                   </ul>
                 </CardContent>
               </Card>
 
               <Card className="border-0 shadow-lg">
-                <CardContent className="p-8">
-                  <h3 className="text-xl font-bold mb-4" style={{ color: theme.colors.brown }}>
+                <CardContent className="p-6 md:p-8">
+                  <h3 className="text-lg md:text-xl font-bold mb-4" style={{ color: theme.colors.brown }}>
                     Contact Information
                   </h3>
-                  <div className="space-y-3 text-gray-700">
+                  <div className="space-y-3 text-sm md:text-base text-gray-700">
                     <div className="flex items-center gap-3">
-                      <Mail size={20} style={{ color: theme.colors.primary }} />
+                      <Mail size={18} style={{ color: theme.colors.primary }} />
                       <span>{config.contact.email}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Phone size={20} style={{ color: theme.colors.primary }} />
+                      <Phone size={18} style={{ color: theme.colors.primary }} />
                       <span>{config.contact.phone}</span>
                     </div>
                   </div>
@@ -127,13 +126,13 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
               viewport={{ once: true }}
             >
               <Card className="border-0 shadow-xl">
-                <CardHeader style={{ backgroundColor: theme.colors.primary }} className="text-white">
-                  <CardTitle className="text-2xl">Distributor Application</CardTitle>
+                <CardHeader style={{ backgroundColor: theme.colors.primary }} className="text-white rounded-t-lg">
+                  <CardTitle className="text-xl md:text-2xl">Distributor Application</CardTitle>
                 </CardHeader>
-                <CardContent className="p-8">
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                <CardContent className="p-6 md:p-8">
+                  <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                      <label className="block font-semibold mb-2" style={{ color: theme.colors.brown }}>
+                      <label className="block font-semibold mb-2 text-sm md:text-base" style={{ color: theme.colors.brown }}>
                         Business Name *
                       </label>
                       <Input
@@ -142,12 +141,12 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
                         value={formData.businessName}
                         onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                         required
-                        className="h-12"
+                        className="h-11 md:h-12"
                       />
                     </div>
 
                     <div>
-                      <label className="block font-semibold mb-2" style={{ color: theme.colors.brown }}>
+                      <label className="block font-semibold mb-2 text-sm md:text-base" style={{ color: theme.colors.brown }}>
                         Contact Name *
                       </label>
                       <Input
@@ -156,13 +155,13 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
                         value={formData.contactName}
                         onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
                         required
-                        className="h-12"
+                        className="h-11 md:h-12"
                       />
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block font-semibold mb-2" style={{ color: theme.colors.brown }}>
+                        <label className="block font-semibold mb-2 text-sm md:text-base" style={{ color: theme.colors.brown }}>
                           Email *
                         </label>
                         <Input
@@ -171,11 +170,11 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           required
-                          className="h-12"
+                          className="h-11 md:h-12"
                         />
                       </div>
                       <div>
-                        <label className="block font-semibold mb-2" style={{ color: theme.colors.brown }}>
+                        <label className="block font-semibold mb-2 text-sm md:text-base" style={{ color: theme.colors.brown }}>
                           Phone *
                         </label>
                         <Input
@@ -184,13 +183,13 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           required
-                          className="h-12"
+                          className="h-11 md:h-12"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block font-semibold mb-2" style={{ color: theme.colors.brown }}>
+                      <label className="block font-semibold mb-2 text-sm md:text-base" style={{ color: theme.colors.brown }}>
                         Location *
                       </label>
                       <Input
@@ -199,19 +198,19 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
                         value={formData.location}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                         required
-                        className="h-12"
+                        className="h-11 md:h-12"
                       />
                     </div>
 
                     <div>
-                      <label className="block font-semibold mb-2" style={{ color: theme.colors.brown }}>
+                      <label className="block font-semibold mb-2 text-sm md:text-base" style={{ color: theme.colors.brown }}>
                         Tell us about your business
                       </label>
                       <Textarea
-                        placeholder="Share details about your distribution network, target markets, etc."
+                        placeholder="Share details about your distribution network..."
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        rows={4}
+                        rows={3}
                         className="resize-none"
                       />
                     </div>
@@ -219,7 +218,7 @@ export function DistributorSection({ variant = 'form', data }: DistributorSectio
                     <Button 
                       type="submit"
                       size="lg" 
-                      className="w-full h-14 text-lg"
+                      className="w-full h-12 md:h-14 text-base md:text-lg"
                       style={{ backgroundColor: theme.colors.secondary }}
                     >
                       Submit Application

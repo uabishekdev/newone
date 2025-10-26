@@ -27,7 +27,7 @@ export function ProductsSection({ variant = 'grid', data }: ProductsSectionProps
     {
       id: '2',
       name: 'Raw A2 Ghee',
-      description: '100% Pure Grass-Fed',
+      description: '100% Pure',
       image: 'https://customer-assets.emergentagent.com/job_multi-dairy/artifacts/uyn36lsk_WhatsApp%20Image%202025-10-25%20at%2014.54.29_fd1cc6f3.jpg'
     },
     {
@@ -38,20 +38,20 @@ export function ProductsSection({ variant = 'grid', data }: ProductsSectionProps
     },
     {
       id: '4',
-      name: 'Raw Goat Milk',
+      name: 'Goat Milk',
       description: 'Farm Fresh',
       image: 'https://customer-assets.emergentagent.com/job_multi-dairy/artifacts/uyn36lsk_WhatsApp%20Image%202025-10-25%20at%2014.54.29_fd1cc6f3.jpg'
     },
     {
       id: '5',
       name: 'Paneer',
-      description: 'Handcrafted from A2 Cow Milk',
+      description: 'Handcrafted A2',
       image: 'https://customer-assets.emergentagent.com/job_multi-dairy/artifacts/bpolvpr8_WhatsApp%20Image%202025-10-25%20at%2015.08.50_7128accb.jpg'
     },
     {
       id: '6',
       name: 'Pinni',
-      description: 'Traditional Recipe',
+      description: 'Traditional',
       image: 'https://customer-assets.emergentagent.com/job_multi-dairy/artifacts/uyn36lsk_WhatsApp%20Image%202025-10-25%20at%2014.54.29_fd1cc6f3.jpg'
     }
   ];
@@ -59,7 +59,7 @@ export function ProductsSection({ variant = 'grid', data }: ProductsSectionProps
   if (variant === 'grid') {
     return (
       <section 
-        className="py-20"
+        className="py-12 md:py-20"
         style={{ backgroundColor: 'white' }}
       >
         <div className="container mx-auto px-4">
@@ -67,10 +67,10 @@ export function ProductsSection({ variant = 'grid', data }: ProductsSectionProps
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 md:mb-16"
           >
             <h2 
-              className="text-5xl font-bold mb-4"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
               style={{ 
                 fontFamily: theme.fontDisplay,
                 color: theme.colors.brown 
@@ -78,10 +78,13 @@ export function ProductsSection({ variant = 'grid', data }: ProductsSectionProps
             >
               Our Products
             </h2>
-            <div className="w-24 h-1 mx-auto" style={{ backgroundColor: theme.colors.secondary }} />
+            <div className="w-20 h-1 mx-auto mb-4" style={{ backgroundColor: theme.colors.secondary }} />
+            <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+              Premium quality dairy products from grass-fed, ethically raised cows
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 mb-8">
             {products.map((product, index) => (
               <motion.div
                 key={product.id}
@@ -89,23 +92,24 @@ export function ProductsSection({ variant = 'grid', data }: ProductsSectionProps
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
               >
-                <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <CardContent className="p-4">
-                    <div className="aspect-square mb-4 bg-white rounded-lg overflow-hidden">
+                <Card className="border-2 shadow-md hover:shadow-2xl transition-all duration-300 h-full" style={{ borderColor: theme.colors.cream }}>
+                  <CardContent className="p-3 md:p-4 flex flex-col h-full">
+                    <div className="bg-gray-50 rounded-xl mb-3 p-2 flex items-center justify-center" style={{ minHeight: '140px' }}>
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-contain"
+                        className="w-full h-32 object-contain"
                       />
                     </div>
                     <h3 
-                      className="text-lg font-bold text-center mb-2"
+                      className="text-sm md:text-base font-bold text-center mb-1 md:mb-2"
                       style={{ color: theme.colors.brown }}
                     >
                       {product.name}
                     </h3>
-                    <p className="text-sm text-center text-gray-600">
+                    <p className="text-xs md:text-sm text-center text-gray-600">
                       {product.description}
                     </p>
                   </CardContent>
@@ -114,16 +118,17 @@ export function ProductsSection({ variant = 'grid', data }: ProductsSectionProps
             ))}
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button 
               variant="outline" 
               size="lg"
+              className="border-2"
               style={{ 
                 borderColor: theme.colors.brown,
                 color: theme.colors.brown
               }}
             >
-              View All
+              View All Products
             </Button>
             <Button 
               size="lg"
