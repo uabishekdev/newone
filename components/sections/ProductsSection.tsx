@@ -30,7 +30,7 @@ const products = [
 
 export default function ProductsSection() {
   return (
-    <section id="products" className="py-16 px-4 md:px-12 max-w-7xl mx-auto">
+    <section id="products" className="scroll-mt-16 md:scroll-mt-20 py-16 px-4 md:px-12 max-w-7xl mx-auto">
       <h2 className="text-5xl font-extrabold text-center mb-12">
         Farmer Joe's Products
       </h2>

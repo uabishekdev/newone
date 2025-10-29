@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
 
-// Mock farm configs (in production, these would come from database)
 const farmConfigs: Record<string, any> = {
   "farmer-joe": {
     farmSlug: "farmer-joe",
@@ -65,7 +63,6 @@ export async function GET(request: NextRequest) {
       if (segments[1] === "locations") {
         const farmSlug = request.nextUrl.searchParams.get("farmSlug");
 
-        // Mock locations data
         const locations = [
           {
             id: "1",

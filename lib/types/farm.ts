@@ -36,7 +36,7 @@ export interface FarmConfig {
   contact: {
     email: string;
     phone: string;
-    address?: { // <-- ADDED
+    address?: { 
       line1: string;
       cityState: string;
     };

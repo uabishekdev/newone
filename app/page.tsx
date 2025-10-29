@@ -3,12 +3,12 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/hero/HeroSection";
 import CowSanctuarySection from "@/components/sections/CowSanctuarySection";
 import TestimonialSection from "@/components/sections/TestimonialSection";
-import StorySection from "@/components/sections/RedBannerSection"; // Make sure to rename this file to StorySection.tsx
 import ProductsSection from "@/components/sections/ProductsSection";
 import { FarmProvider } from "@/lib/contexts/FarmContext";
-import { FarmConfig } from "@/lib/types/farm"; // Your FarmConfig type
+import { FarmConfig } from "@/lib/types/farm";
 
 import farmConfigData from "@/app/farms/farmer-joe/config.json";
+import StorySection from "@/components/sections/StorySection";
 
 const farmConfig = farmConfigData as FarmConfig;
 
@@ -20,7 +20,7 @@ export default function Home() {
         <main className="flex-1 w-full">
           <HeroSection />
           <ProductsSection />
-          <StorySection />
+             <StorySection />
           <CowSanctuarySection />
           <TestimonialSection />
         </main>

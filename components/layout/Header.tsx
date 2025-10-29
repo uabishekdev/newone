@@ -3,6 +3,8 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useFarm } from "@/lib/contexts/FarmContext";
+import { smoothScrollTo } from "@/lib/utils";
+import { COW_SANCTUARY_DONATE_URL } from "@/lib/constants";
 
 export function Header() {
   const { config } = useFarm();
@@ -13,15 +15,12 @@ export function Header() {
     backgroundColor: theme.colors.cream + "F5",
     borderColor: theme.colors.secondary + "30",
   };
-
   const brownColor = { color: theme.colors.brown };
-
   const donateButtonStyle = {
     backgroundColor: "#FFFFFF",
     color: "#EC1C24",
     border: "1px solid #EC1C24",
   };
-
   const creamBg = { backgroundColor: theme.colors.cream };
   const borderColor = { borderColor: theme.colors.brown + "20" };
 
@@ -29,22 +28,18 @@ export function Header() {
     e: React.MouseEvent<HTMLAnchorElement>,
     sectionId: string
   ) => {
-    e.preventDefault();
-    setMobileMenuOpen(false);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    smoothScrollTo(e, sectionId, () => setMobileMenuOpen(false));
   };
 
   return (
-    <div>
+    <>
       <header
         className="sticky top-0 z-50 border-b backdrop-blur-sm"
         style={headerBgStyle}
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
+            {/* Logo */}
             <div className="flex items-center">
               <img
                 src="/images/logo.png"
@@ -53,6 +48,7 @@ export function Header() {
               />
             </div>
 
+            {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8 ml-8">
               <a
                 href="#products"
@@ -78,6 +74,7 @@ export function Header() {
               </a>
             </nav>
 
+            {/* Desktop Actions */}
             <div className="hidden lg:flex items-center gap-4">
               <a
                 href="#our-story"
@@ -88,8 +85,9 @@ export function Header() {
                 Meet Farmer Joe
               </a>
               <a
-                href="https://ourcowsanctuary.org/?cause=chariti-foundation"
+                href={COW_SANCTUARY_DONATE_URL}
                 rel="noopener noreferrer"
+                target="_blank"
                 className="px-5 py-2.5 rounded-lg font-bold hover:opacity-90 transition-opacity text-sm whitespace-nowrap"
                 style={donateButtonStyle}
               >
@@ -97,6 +95,7 @@ export function Header() {
               </a>
             </div>
 
+            {/* Mobile Menu Toggle */}
             <button
               className="lg:hidden p-2"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -112,13 +111,17 @@ export function Header() {
         </div>
       </header>
 
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div>
+          {/* Overlay */}
           <div
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
           />
 
+          {/* Menu Content */}
           <nav
             className="fixed top-0 right-0 z-50 h-full w-72 shadow-2xl transform transition-transform duration-300 ease-in-out lg:hidden"
             style={creamBg}
@@ -142,7 +145,8 @@ export function Header() {
               <ul className="space-y-1">
                 <li>
                   <a
-                    href="/products"
+                    href="#products"
+                    onClick={(e) => handleNavClick(e, "products")}
                     className="block py-3 px-4 rounded-lg font-semibold hover:bg-white/50 transition-all"
                     style={brownColor}
                   >
@@ -152,6 +156,7 @@ export function Header() {
                 <li>
                   <a
                     href="/stores"
+                    onClick={() => setMobileMenuOpen(false)}
                     className="block py-3 px-4 rounded-lg font-semibold hover:bg-white/50 transition-all"
                     style={brownColor}
                   >
@@ -161,6 +166,7 @@ export function Header() {
                 <li>
                   <a
                     href="/pickup"
+                    onClick={() => setMobileMenuOpen(false)}
                     className="block py-3 px-4 rounded-lg font-semibold hover:bg-white/50 transition-all"
                     style={brownColor}
                   >
@@ -181,9 +187,12 @@ export function Header() {
 
               <div className="mt-6 pt-6 border-t" style={borderColor}>
                 <a
-                  href="/donate"
+                  href={COW_SANCTUARY_DONATE_URL}
+                  rel="noopener noreferrer"
+                  target="_blank"
                   className="block text-center py-3 px-4 rounded-lg font-bold hover:opacity-90 transition-opacity"
                   style={donateButtonStyle}
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   Donate to Cow Sanctuary
                 </a>
@@ -192,6 +201,6 @@ export function Header() {
           </nav>
         </div>
       )}
-    </div>
+    </>
   );
 }

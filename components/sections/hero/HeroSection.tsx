@@ -20,11 +20,13 @@ export function HeroSection() {
       <div
         className="absolute inset-0 z-[1]"
         style={{
-          background: theme.heroGradient,
+          background:
+            theme.heroGradient ||
+            "linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.15) 100%)",
         }}
       />
 
-      {/* Milk Bottles  */}
+      {/* Milk Bottles */}
       <div className="hidden lg:block absolute right-[5%] xl:right-[7%] 2xl:right-[8%] top-[64%] xl:top-[66%] -translate-y-1/2 w-[300px] xl:w-[340px] 2xl:w-[380px] h-[360px] xl:h-[420px] 2xl:h-[460px] z-20">
         <img
           src="/images/milk-bottle-large.png"
@@ -57,7 +59,7 @@ export function HeroSection() {
             >
               <span>PURE</span>
               <span
-                className="inline-block bg-white"
+                className="inline-block bg-white rounded-full"
                 style={{
                   width: "8px",
                   height: "8px",
@@ -67,7 +69,7 @@ export function HeroSection() {
               />
               <span>ETHICAL</span>
               <span
-                className="inline-block bg-white"
+                className="inline-block bg-white rounded-full"
                 style={{
                   width: "8px",
                   height: "8px",
@@ -85,7 +87,8 @@ export function HeroSection() {
               <button
                 className="w-full sm:w-auto px-8 py-3 min-w-[180px] text-white font-semibold rounded-lg shadow-lg hover:opacity-90 hover:scale-105 transition-all duration-200 whitespace-nowrap text-base"
                 style={{
-                  backgroundColor: theme.colors.heroButton || theme.colors.secondary,
+                  backgroundColor:
+                    theme.colors.heroButton || theme.colors.secondary,
                 }}
               >
                 Find nearest store
@@ -111,7 +114,7 @@ export function HeroSection() {
           >
             <span>NO KILL</span>
             <span
-              className="inline-block bg-white"
+              className="inline-block bg-white rounded-full"
               style={{
                 width: "8px",
                 height: "8px",
@@ -121,7 +124,7 @@ export function HeroSection() {
             />
             <span>NO CORN</span>
             <span
-              className="inline-block bg-white"
+              className="inline-block bg-white rounded-full"
               style={{
                 width: "8px",
                 height: "8px",
@@ -131,7 +134,7 @@ export function HeroSection() {
             />
             <span>NO SOY</span>
             <span
-              className="inline-block bg-white"
+              className="inline-block bg-white rounded-full"
               style={{
                 width: "8px",
                 height: "8px",

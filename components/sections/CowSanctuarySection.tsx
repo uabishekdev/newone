@@ -1,5 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { COW_SANCTUARY_DONATE_URL ,COW_SANCTUARY } from "@/lib/constants"; 
+
 
 export default function CowSanctuarySection() {
   return (
@@ -9,8 +11,10 @@ export default function CowSanctuarySection() {
           A Home for every Cow
         </h2>
         <a
-          href="https://ourcowsanctuary.org"
-          className="text-3xl font-bold text-green-700 mb-4 block"
+          href={COW_SANCTUARY}
+          rel="noopener noreferrer"
+          target="_blank"
+          className="text-3xl font-bold text-green-700 mb-4 block "
         >
           ourcowsanctuary.org
         </a>
@@ -23,14 +27,14 @@ export default function CowSanctuarySection() {
         </p>
         <div className="flex gap-4 mt-4">
           <a
-            href="https://ourcowsanctuary.org/?cause=chariti-foundation"
+            href={COW_SANCTUARY_DONATE_URL} 
             rel="noopener noreferrer"
+            target="_blank"
           >
             <Button className="bg-white border-2 border-orange-600 text-orange-600 font-semibold px-8 py-3 rounded-lg hover:bg-orange-50 transition">
               Donate
             </Button>
           </a>
-
           {/* <Button className="bg-orange-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-700 transition">Adopt cows</Button> */}
         </div>
       </div>
