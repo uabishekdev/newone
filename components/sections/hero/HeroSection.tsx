@@ -1,73 +1,146 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { useFarm } from '@/lib/contexts/FarmContext';
-import { motion } from 'framer-motion';
+import { useFarm } from "@/lib/contexts/FarmContext";
 
-interface HeroSectionProps {
-  variant?: 'image-left' | 'image-right' | 'centered';
-  data?: any;
-  props?: {
-    fullHeight?: boolean;
-    spacing?: 'compact' | 'comfortable' | 'spacious';
-  };
-}
-
-export function HeroSection({ variant = 'centered', data, props }: HeroSectionProps) {
+export function HeroSection() {
   const { config } = useFarm();
   const theme = config.theme;
 
-  const spacing = props?.spacing === 'compact' ? 'py-8' 
-    : props?.spacing === 'comfortable' ? 'py-16'
-    : 'py-24';
-
-  const height = props?.fullHeight ? 'min-h-screen' : 'min-h-[500px]';
-
   return (
-    <section className={`relative min-h-[600px] flex items-center justify-center overflow-hidden`}>
-      {/* Full-width background image */}
-      <img
-        src="/images/hero-bg.jpg"
-        alt="Farm background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
-        style={{ objectPosition: 'center' }}
-      />
-      {/* Overlay for better text contrast */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60 z-10" />
+    <section className="relative w-full h-screen min-h-[600px] overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 w-full h-full">
+        <img
+          src="/images/landingBanner.png"
+          alt="Farm background"
+          className="w-full h-full object-cover object-[center_20%] sm:object-[center_25%] md:object-[center_30%]"
+        />
+      </div>
 
-      <div className="relative z-20 w-full flex flex-col items-center justify-center text-center px-4">
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="text-6xl md:text-7xl font-extrabold mb-4 tracking-tight"
-          style={{ color: '#D2691E', fontFamily: theme.fontDisplay }}
+      <div
+        className="absolute inset-0 z-[1]"
+        style={{
+          background: theme.heroGradient,
+        }}
+      />
+
+      {/* Milk Bottles  */}
+      <div className="hidden lg:block absolute right-[5%] xl:right-[7%] 2xl:right-[8%] top-[64%] xl:top-[66%] -translate-y-1/2 w-[300px] xl:w-[340px] 2xl:w-[380px] h-[360px] xl:h-[420px] 2xl:h-[460px] z-20">
+        <img
+          src="/images/milk-bottle-large.png"
+          alt="Raw Milk Bottles"
+          className="w-full h-full object-contain"
+          style={{ filter: "drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.25))" }}
+        />
+      </div>
+
+      <div className="absolute inset-0 z-30 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        {/* Content centered */}
+        <div className="w-full max-w-[1400px] mx-auto flex items-center justify-center min-h-[400px]">
+          <div className="text-center max-w-[700px]">
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[80px] font-extrabold mb-3 md:mb-4 tracking-tight leading-none"
+              style={{
+                color: theme.colors.heroHeading || theme.colors.primary,
+                textShadow:
+                  "0px 4px 4px rgba(0, 0, 0, 0.25), 0px 8px 8px rgba(0, 0, 0, 0.15)",
+              }}
+            >
+              RAW MILK
+            </h1>
+
+            <h2
+              className="text-xl sm:text-2xl md:text-3xl lg:text-[36px] xl:text-[40px] font-bold text-white mb-6 md:mb-8 leading-tight tracking-wider flex items-center justify-center gap-2 sm:gap-3"
+              style={{
+                textShadow: "0px 4px 8px rgba(0, 0, 0, 0.6)",
+              }}
+            >
+              <span>PURE</span>
+              <span
+                className="inline-block bg-white"
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  minWidth: "8px",
+                  minHeight: "8px",
+                }}
+              />
+              <span>ETHICAL</span>
+              <span
+                className="inline-block bg-white"
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  minWidth: "8px",
+                  minHeight: "8px",
+                }}
+              />
+              <span>LOCAL</span>
+            </h2>
+
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+              <button className="w-full sm:w-auto px-8 py-3 min-w-[180px] bg-white text-gray-800 font-semibold rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 hover:scale-105 transition-all duration-200 whitespace-nowrap text-base">
+                Meet Farmer Joe
+              </button>
+              <button
+                className="w-full sm:w-auto px-8 py-3 min-w-[180px] text-white font-semibold rounded-lg shadow-lg hover:opacity-90 hover:scale-105 transition-all duration-200 whitespace-nowrap text-base"
+                style={{
+                  backgroundColor: theme.colors.heroButton || theme.colors.secondary,
+                }}
+              >
+                Find nearest store
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-0 left-0 right-0 z-30 w-full">
+        <div
+          className="w-full py-4 sm:py-5 md:py-6 lg:py-7"
+          style={{
+            backgroundColor: theme.colors.heroBanner,
+          }}
         >
-          RAW MILK
-        </motion.h1>
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-3xl md:text-4xl font-bold mb-8 tracking-wide text-white drop-shadow-lg"
-        >
-          PURE . ETHICAL . LOCAL
-        </motion.h2>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-2">
-          <Button
-            size="lg"
-            className="bg-white text-gray-900 font-semibold px-8 py-4 rounded-lg shadow hover:bg-orange-100 border border-gray-200"
-            style={{ fontFamily: theme.fontDisplay }}
+          <div
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-[38px] font-bold text-white text-center leading-tight px-4 tracking-wider flex items-center justify-center gap-2 sm:gap-3 flex-wrap"
+            style={{
+              textShadow:
+                "0px 4px 4px rgba(0, 0, 0, 0.30), 0px 8px 12px rgba(0, 0, 0, 0.15)",
+            }}
           >
-            Meet Farmer Joe
-          </Button>
-          <Button
-            size="lg"
-            className="bg-green-700 text-white font-semibold px-8 py-4 rounded-lg shadow hover:bg-green-800 border border-green-700"
-            style={{ fontFamily: theme.fontDisplay }}
-          >
-            Find nearest store
-          </Button>
+            <span>NO KILL</span>
+            <span
+              className="inline-block bg-white"
+              style={{
+                width: "8px",
+                height: "8px",
+                minWidth: "8px",
+                minHeight: "8px",
+              }}
+            />
+            <span>NO CORN</span>
+            <span
+              className="inline-block bg-white"
+              style={{
+                width: "8px",
+                height: "8px",
+                minWidth: "8px",
+                minHeight: "8px",
+              }}
+            />
+            <span>NO SOY</span>
+            <span
+              className="inline-block bg-white"
+              style={{
+                width: "8px",
+                height: "8px",
+                minWidth: "8px",
+                minHeight: "8px",
+              }}
+            />
+            <span>NO SILAGE</span>
+          </div>
         </div>
       </div>
     </section>

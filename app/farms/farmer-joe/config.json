@@ -1,7 +1,7 @@
 {
   "farmSlug": "farmer-joe",
   "name": "Farmer Joe's Dairy",
-  "tagline": "No Kill, No Soy, No Corn, No Silage - No Bullshit",
+  "tagline": "No Kill, No Soy, No Corn, No Silage",
   "domain": "farmerjoe.com",
   "layout": "boxed",
   "sections": [
@@ -25,11 +25,17 @@
       "cream": "#FCFCF9",
       "brown": "#5E5240",
       "background": "#FFFFFF",
-      "surface": "#F8F9FA"
+      "surface": "#F8F9FA",
+      "danger": "#EC1C24",
+      "heroHeading": "#E26102",
+      "heroButton": "#3E6E03",
+      "heroBanner": "rgba(255, 236, 191, 0.55)",
+      "quote": "#3E6E03"
     },
     "fontFamily": "Inter, sans-serif",
     "fontDisplay": "Poppins, sans-serif",
     "borderRadius": "16px",
+    "heroGradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.15) 100%)",
     "spacing": {
       "section": {
         "compact": "3rem",
@@ -57,11 +63,31 @@
   },
   "contact": {
     "email": "hello@farmerjoe.com",
-    "phone": "(555) 123-MILK"
+    "phone": "(555) 123-MILK",
+    "address": {
+      "line1": "7506 Maze Boulevard,",
+      "cityState": "Modesto, CA"
+    }
   },
-  "social": {
-    "instagram": "@farmerjoe_dairy",
-    "facebook": "Farmer Joe Dairy",
-    "youtube": "Farmer Joe Stories"
-  }
+  "social": [
+    { 
+      "name": "Facebook", 
+      "url": "https://www.facebook.com/ValleyMilkSimplyBottled/", 
+      "image": "/images/fbLogo.png" 
+    },
+    { 
+      "name": "Instagram", 
+      "url": "https://www.instagram.com/valleymilksb/", 
+      "image": "/images/instaLogo.png" 
+    },
+    { 
+      "name": "Google", 
+      "url": "https://share.google/TWOsu10BDRlKkso5n", 
+      "image": "/images/googleLogo.png" 
+    }
+  ],
+  "footerLinks": [
+    { "title": "No Soy, No Corn", "href": "#" },
+    { "title": "Commoonistary", "href": "#" }
+  ]
 }

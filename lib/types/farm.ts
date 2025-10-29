@@ -5,10 +5,18 @@ export interface FarmTheme {
     cream: string;
     brown: string;
     accent?: string;
+    background?: string;
+    surface?: string;
+    danger?: string;
+    heroHeading?: string;
+    heroButton?: string;
+    heroBanner?: string;
+    quote?: string;
   };
   fontFamily: string;
   fontDisplay: string;
   borderRadius: string;
+  heroGradient?: string; 
 }
 
 export interface SectionConfig {
@@ -28,13 +36,20 @@ export interface FarmConfig {
   contact: {
     email: string;
     phone: string;
+    address?: { // <-- ADDED
+      line1: string;
+      cityState: string;
+    };
   };
-  social: {
-    instagram?: string;
-    facebook?: string;
-    youtube?: string;
-    twitter?: string;
-  };
+  social: { 
+    name: string;
+    url: string;
+    image: string;
+  }[];
+  footerLinks?: { 
+    title: string;
+    href: string;
+  }[];
 }
 
 export interface Product {
