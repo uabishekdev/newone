@@ -33,15 +33,6 @@ const dayOrder = [
 
 const libraries: "places"[] = ["places"];
 
-const PICKUP_COLORS = {
-  background: farmConfig.theme.colors.cream || "#FFF8F0",
-  heading: farmConfig.theme.colors.secondary || "#5E9A5C",
-  loader: farmConfig.theme.colors.primary || "#D2691E",
-  nearestBadge: "#FF8C42",
-  nearestBorder: "#FF8C42",
-  defaultBorder: "#E5E7EB",
-};
-
 export default function PickupPage() {
   const [pickupData, setPickupData] = useState<{
     [day: string]: PickupLocation[];
@@ -57,6 +48,10 @@ export default function PickupPage() {
   });
 
   const handleAddressSelect = async (address: string) => {
+    if (!address) {
+      setError("Please enter a valid address or zipcode.");
+      return;
+    }
     setError(null);
     setLoading(true);
 
@@ -83,6 +78,11 @@ export default function PickupPage() {
 
   const handleSearchChange = (value: string) => {
     searchInputRef.current = value;
+  };
+
+  const handleGoClick = () => {
+    const searchValue = searchInputRef.current.trim();
+    handleAddressSelect(searchValue);
   };
 
   const sortedDays = useMemo(
@@ -122,13 +122,14 @@ export default function PickupPage() {
       <FarmProvider config={farmConfig}>
         <div
           className="min-h-screen flex flex-col"
-          style={{ backgroundColor: PICKUP_COLORS.background }}
+          style={{ backgroundColor: farmConfig.theme.colors.cream }}
         >
           <Header />
           <main className="flex-1 w-full py-16">
             <div className="container mx-auto px-4 text-center">
               <p className="text-red-600">
-                Google Maps API key is not configured.
+                Google Maps API key is not configured. Please add
+                NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env.local file.
               </p>
             </div>
           </main>
@@ -143,7 +144,7 @@ export default function PickupPage() {
       <FarmProvider config={farmConfig}>
         <div
           className="min-h-screen flex flex-col"
-          style={{ backgroundColor: PICKUP_COLORS.background }}
+          style={{ backgroundColor: farmConfig.theme.colors.cream }}
         >
           <Header />
           <main className="flex-1 w-full py-16">
@@ -162,14 +163,14 @@ export default function PickupPage() {
       <FarmProvider config={farmConfig}>
         <div
           className="min-h-screen flex flex-col"
-          style={{ backgroundColor: PICKUP_COLORS.background }}
+          style={{ backgroundColor: farmConfig.theme.colors.cream }}
         >
           <Header />
           <main className="flex-1 w-full py-16 flex items-center justify-center">
             <Loader2
               className="animate-spin"
               size={48}
-              style={{ color: PICKUP_COLORS.loader }}
+              style={{ color: farmConfig.theme.colors.primary }}
             />
           </main>
           <Footer />
@@ -182,7 +183,7 @@ export default function PickupPage() {
     <FarmProvider config={farmConfig}>
       <div
         className="min-h-screen flex flex-col"
-        style={{ backgroundColor: PICKUP_COLORS.background }}
+        style={{ backgroundColor: farmConfig.theme.colors.cream }}
       >
         <Header />
         <main className="flex-1 w-full py-16">
@@ -193,20 +194,38 @@ export default function PickupPage() {
               </h1>
               <p
                 className="text-3xl font-bold mb-8"
-                style={{ color: PICKUP_COLORS.heading }}
+                style={{ color: farmConfig.theme.colors.secondary }}
               >
                 Collect directly from a local pickup point.
               </p>
 
-              <div className="max-w-2xl mx-auto mb-2">
-                <AddressAutocomplete
-                  isLoaded={isLoaded}
-                  onAddressSelect={handleAddressSelect}
-                  onChange={handleSearchChange}
-                  placeholder="Enter address or zipcode (e.g., 1010 10th St, Modesto, CA)"
-                  disabled={loading}
-                  countryCode="us"
-                />
+              <div className="max-w-3xl mx-auto mb-2">
+                <div className="flex flex-col sm:flex-row gap-3 items-center">
+                  <AddressAutocomplete
+                    isLoaded={isLoaded}
+                    onAddressSelect={handleAddressSelect}
+                    onChange={handleSearchChange}
+                    placeholder="805 Blvd, Street 8A, Palo, 18239"
+                    disabled={loading}
+                    countryCode="us"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleGoClick}
+                    disabled={loading}
+                    className="px-6 py-3 text-white font-semibold rounded-lg transition-all whitespace-nowrap text-base w-full sm:w-auto flex items-center justify-center"
+                    style={{
+                      backgroundColor: farmConfig.theme.colors.heroHeading,
+                    }}
+                  >
+                    {loading ? (
+                      <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                      "Find nearest pickup point"
+                    )}
+                  </button>
+                  <MapPin size={24} className="text-blue-600 flex-shrink-0" />
+                </div>
               </div>
 
               {error && (
@@ -229,7 +248,7 @@ export default function PickupPage() {
                 <Loader2
                   className="animate-spin"
                   size={48}
-                  style={{ color: PICKUP_COLORS.loader }}
+                  style={{ color: farmConfig.theme.colors.primary }}
                 />
               </div>
             )}
@@ -248,31 +267,48 @@ export default function PickupPage() {
                         {locations.map((location) => {
                           const isNearest = isNearestTwo(location.id);
                           const nearestLabel = getNearestLabel(location.id);
+                          const nearestBg =
+                            (farmConfig.theme.colors.heroHeading || "#E26102") +
+                            "26";
 
                           return (
                             <div
                               key={location.id}
-                              className="bg-white rounded-xl shadow-sm p-6 border-2 transition-all hover:shadow-md"
+                              className="bg-white rounded-xl shadow-sm p-6 border-2 transition-all hover:shadow-md relative"
                               style={{
                                 borderColor: isNearest
-                                  ? PICKUP_COLORS.nearestBorder
-                                  : PICKUP_COLORS.defaultBorder,
+                                  ? farmConfig.theme.colors.heroHeading
+                                  : "#E5E7EB",
+                                backgroundColor: isNearest
+                                  ? nearestBg
+                                  : "#FFFFFF",
                               }}
                             >
+                              <div className="absolute top-4 right-4">
+                                <Navigation
+                                  size={24}
+                                  className="text-blue-600"
+                                />
+                              </div>
+
                               {nearestLabel && (
                                 <div
-                                  className="inline-block px-3 py-1.5 rounded-full text-xs font-bold mb-4 text-white"
+                                  className="text-sm font-bold mb-3"
                                   style={{
-                                    backgroundColor: PICKUP_COLORS.nearestBadge,
+                                    color: farmConfig.theme.colors.heroHeading,
                                   }}
                                 >
                                   {nearestLabel}
                                 </div>
                               )}
 
-                              <div className="space-y-3">
+                              <div
+                                className={`space-y-3 ${
+                                  nearestLabel ? "" : "pt-1"
+                                }`}
+                              >
                                 {location.address && (
-                                  <p className="text-base font-semibold text-gray-900 leading-snug">
+                                  <p className="text-base font-semibold text-gray-900 leading-snug pr-8">
                                     {location.address}
                                   </p>
                                 )}
@@ -301,10 +337,6 @@ export default function PickupPage() {
                                   </div>
                                 )}
                               </div>
-
-                              <button className="w-full mt-5 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-sm">
-                                <Navigation size={18} />
-                              </button>
                             </div>
                           );
                         })}

@@ -8,21 +8,17 @@ import { FarmProvider } from "@/lib/contexts/FarmContext";
 import { FarmConfig } from "@/lib/types/farm";
 import { StoreMap } from "@/components/map/StoreMap";
 import { AddressAutocomplete } from "@/components/search/AddressAutocomplete";
-import { DistributionLocation } from "@/lib/types/location";
-import { getDistributionLocations } from "@/lib/services/locationService";
+import { BaseLocation } from "@/lib/types/location";
+import { getAllLocations } from "@/lib/services/locationService";
 import { Phone, MapPin, Loader2, AlertCircle } from "lucide-react";
 import farmConfigData from "@/app/farms/farmer-joe/config.json";
 
 const farmConfig = farmConfigData as FarmConfig;
 const libraries: "places"[] = ["places"];
 
-// Default location if no stores are found on initial load
-const DEFAULT_MAP_CENTER = { lat: 37.6391, lng: -121.0018 };
-
 export default function StoresPage() {
-  const [stores, setStores] = useState<DistributionLocation[]>([]);
-  const [selectedStore, setSelectedStore] =
-    useState<DistributionLocation | null>(null);
+  const [stores, setStores] = useState<BaseLocation[]>([]);
+  const [selectedStore, setSelectedStore] = useState<BaseLocation | null>(null);
   const [mapCenter, setMapCenter] = useState<{
     lat: number;
     lng: number;
@@ -42,34 +38,44 @@ export default function StoresPage() {
     if (isLoaded) {
       loadAllStores();
     }
-  }, [isLoaded]); // Only run this effect once the API script is loaded
+  }, [isLoaded]);
 
   const loadAllStores = async () => {
     setLoading(true);
 
     try {
-      const response = await getDistributionLocations("");
+      const response = await getAllLocations("");
 
-      if (
-        response.data &&
-        Array.isArray(response.data) &&
-        response.data.length > 0
-      ) {
-        setStores(response.data);
-        const firstStore = response.data[0];
+      let allStores = response.allLocations.filter(
+        (store) => store.locationType !== "user"
+      );
+
+      const seenIds = new Set<string>();
+      allStores = allStores.filter((store) => {
+        const uniqueId = `${store.id}-${store.locationType}`;
+        if (seenIds.has(uniqueId)) {
+          console.warn("Duplicate store found:", store.locationName, store.id);
+          return false;
+        }
+        seenIds.add(uniqueId);
+        return true;
+      });
+
+      if (allStores.length > 0) {
+        setStores(allStores);
+        const firstStore = allStores[0];
         setMapCenter({
           lat: firstStore.coordinates.coordinates[1],
           lng: firstStore.coordinates.coordinates[0],
         });
       } else {
-        // FIX: Set a default center if no stores are found
         setStores([]);
-        setMapCenter(DEFAULT_MAP_CENTER);
+        setMapCenter(null);
       }
     } catch (error) {
       setError("Unable to load stores. Please refresh the page.");
-      // FIX: Also set a default center on error
-      setMapCenter(DEFAULT_MAP_CENTER);
+      setStores([]);
+      setMapCenter(null);
     } finally {
       setLoading(false);
     }
@@ -81,28 +87,53 @@ export default function StoresPage() {
     setHasSearched(true);
 
     try {
-      const response = await getDistributionLocations(address);
+      const response = await getAllLocations(address);
 
-      if (
-        response.data &&
-        Array.isArray(response.data) &&
-        response.data.length > 0
-      ) {
-        setStores(response.data);
+      let allStores = response.allLocations.filter(
+        (store) => store.locationType !== "user"
+      );
 
-        const firstStore = response.data[0];
+      const seenIds = new Set<string>();
+      allStores = allStores.filter((store) => {
+        const uniqueId = `${store.id}-${store.locationType}`;
+        if (seenIds.has(uniqueId)) {
+          console.warn("Duplicate store found:", store.locationName, store.id);
+          return false;
+        }
+        seenIds.add(uniqueId);
+        return true;
+      });
 
-        setMapCenter({
-          lat: firstStore.coordinates.coordinates[1],
-          lng: firstStore.coordinates.coordinates[0],
-        });
-        setSelectedStore(firstStore);
+      console.log("=== STORES ORDER FROM API (after dedup) ===");
+      allStores.forEach((s, i) => {
+        console.log(`${i + 1}. ${s.locationName} - ${s.distanceInMiles} miles`);
+      });
+
+      if (allStores.length > 0) {
+        setStores(allStores);
+
+        if (response.searchCoordinates) {
+          setMapCenter({
+            lat: response.searchCoordinates.coordinates[1],
+            lng: response.searchCoordinates.coordinates[0],
+          });
+        } else {
+          const firstValidStore = allStores.find((s) => s.distanceInMiles > 0);
+          if (firstValidStore) {
+            setMapCenter({
+              lat: firstValidStore.coordinates.coordinates[1],
+              lng: firstValidStore.coordinates.coordinates[0],
+            });
+          }
+        }
+
+        const nearestStore = allStores.find((s) => s.distanceInMiles > 0);
+        setSelectedStore(nearestStore || allStores[0]);
       } else {
         setError(
           "No stores found near this location. Try a different address."
         );
         setStores([]);
-        // Keep the current map center instead of changing it
       }
     } catch (error) {
       setError("Unable to find location. Please try a different address.");
@@ -124,7 +155,7 @@ export default function StoresPage() {
     }
   };
 
-  const handleStoreClick = (store: DistributionLocation) => {
+  const handleStoreClick = (store: BaseLocation) => {
     setSelectedStore(store);
     setMapCenter({
       lat: store.coordinates.coordinates[1],
@@ -134,6 +165,24 @@ export default function StoresPage() {
 
   const formatDistance = (distanceInMiles: number) => {
     return `${distanceInMiles.toFixed(1)} miles`;
+  };
+
+  const getLocationTypeLabel = (locationType: string) => {
+    switch (locationType) {
+      case "farm":
+        return {  label: "Farm", color: "bg-green-500" };
+      case "distribution":
+        return { label: "Store", color: "bg-blue-500" };
+      default:
+        return { label: "Location", color: "bg-gray-500" };
+    }
+  };
+
+  const isSameStore = (store1: BaseLocation | null, store2: BaseLocation) => {
+    if (!store1) return false;
+    return (
+      store1.id === store2.id && store1.locationType === store2.locationType
+    );
   };
 
   if (loadError) {
@@ -150,9 +199,7 @@ export default function StoresPage() {
     );
   }
 
-  // This check is now robust. `isLoaded` comes from the hook.
-  // `mapCenter` is guaranteed to be set by `loadAllStores` (which only runs if isLoaded is true).
-  if (!isLoaded || !mapCenter) {
+  if (!isLoaded) {
     return (
       <FarmProvider config={farmConfig}>
         <div className="min-h-screen flex flex-col">
@@ -250,52 +297,79 @@ export default function StoresPage() {
                 )}
 
                 <div className="space-y-3">
-                  {stores.map((store, index) => (
-                    <div
-                      key={store.id}
-                      onClick={() => handleStoreClick(store)}
-                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                        selectedStore?.id === store.id
-                          ? "bg-orange-50 border-orange-500"
-                          : index === 0 && hasSearched
-                          ? "bg-green-50 border-green-400"
-                          : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-full bg-white border border-gray-200">
-                          <MapPin size={20} className="text-orange-600" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-sm">
-                                {store.locationName}
-                              </h3>
-                              {index === 0 && hasSearched && (
-                                <span className="px-2 py-0.5 bg-green-500 text-white text-xs font-bold rounded-full">
-                                  Nearest
-                                </span>
+                  {(() => {
+                    const nearestIndex = stores.findIndex(
+                      (s) => s.distanceInMiles > 0
+                    );
+                    return stores.map((store, index) => {
+                      const locationTypeInfo = getLocationTypeLabel(
+                        store.locationType
+                      );
+                      const isNearest = index === nearestIndex && hasSearched;
+                      const uniqueKey = `${store.id}-${store.locationType}-${index}`;
+
+                      return (
+                        <div
+                          key={uniqueKey}
+                          onClick={() => handleStoreClick(store)}
+                          className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                            isSameStore(selectedStore, store)
+                              ? "bg-orange-50 border-orange-500"
+                              : isNearest
+                              ? "bg-green-50 border-green-400"
+                              : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="p-2 rounded-full bg-white border border-gray-200">
+                              <MapPin size={20} className="text-orange-600" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between gap-2 mb-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h3 className="font-bold text-sm">
+                                    {store.locationName ||
+                                      store.address ||
+                                      "Location"}
+                                  </h3>
+
+                                  <span
+                                    className={`px-2 py-0.5 ${locationTypeInfo.color} text-white text-xs font-bold rounded-full`}
+                                  >
+                                    {locationTypeInfo.label}
+                                  </span>
+
+                                  {isNearest && (
+                                    <span className="px-2 py-0.5 bg-green-500 text-white text-xs font-bold rounded-full">
+                                      Nearest
+                                    </span>
+                                  )}
+                                </div>
+                                {hasSearched &&
+                                  store.distanceInMiles !== undefined &&
+                                  store.distanceInMiles > 0 && (
+                                    <span className="text-xs font-bold text-blue-600 whitespace-nowrap">
+                                      {formatDistance(store.distanceInMiles)}
+                                    </span>
+                                  )}
+                              </div>
+                              {store.address && (
+                                <p className="text-xs text-gray-600 mb-1">
+                                  {store.address}
+                                </p>
+                              )}
+                              {store.mobileNumber && (
+                                <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
+                                  <Phone size={12} />
+                                  <span>{store.mobileNumber}</span>
+                                </div>
                               )}
                             </div>
-                            {hasSearched &&
-                              store.distanceInMiles !== undefined &&
-                              store.distanceInMiles > 0 && (
-                                <span className="text-xs font-bold text-blue-600 whitespace-nowrap">
-                                  {formatDistance(store.distanceInMiles)}
-                                </span>
-                              )}
                           </div>
-                          {store.mobileNumber && (
-                            <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
-                              <Phone size={12} />
-                              <span>{store.mobileNumber}</span>
-                            </div>
-                          )}
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    });
+                  })()}
                 </div>
 
                 {!loading && stores.length === 0 && !error && (
@@ -308,27 +382,38 @@ export default function StoresPage() {
             </div>
 
             <div className="flex-1 flex flex-col">
-              <div className="flex-1 h-[400px] md:h-auto relative">
-                <StoreMap
-                  stores={stores}
-                  center={mapCenter}
-                  onStoreClick={handleStoreClick}
-                />
-                {stores.length > 0 && (
-                  <div className="absolute top-4 left-4 bg-white px-3 py-2 rounded-lg shadow-lg z-10">
-                    <p className="text-sm font-semibold">
-                      {stores.length} store{stores.length !== 1 ? "s" : ""}
-                    </p>
-                    {hasSearched &&
-                      stores[0] &&
-                      stores[0].distanceInMiles !== undefined && (
-                        <p className="text-xs text-gray-600">
-                          Nearest: {stores[0].distanceInMiles.toFixed(1)} mi
-                        </p>
-                      )}
+              {mapCenter ? (
+                <div className="flex-1 h-[400px] md:h-auto relative">
+                  <StoreMap
+                    stores={stores}
+                    center={mapCenter}
+                    selectedStore={selectedStore}
+                    onStoreClick={handleStoreClick}
+                  />
+                  {stores.length > 0 && (
+                    <div className="absolute top-4 left-4 bg-white px-3 py-2 rounded-lg shadow-lg z-10">
+                      <p className="text-sm font-semibold">
+                        {stores.length} location{stores.length !== 1 ? "s" : ""}
+                      </p>
+                      {hasSearched &&
+                        stores[0] &&
+                        stores[0].distanceInMiles !== undefined &&
+                        stores[0].distanceInMiles > 0 && (
+                          <p className="text-xs text-gray-600">
+                            Nearest: {stores[0].distanceInMiles.toFixed(1)} mi
+                          </p>
+                        )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex-1 h-[400px] md:h-auto flex items-center justify-center bg-gray-100">
+                  <div className="text-center">
+                    <MapPin size={64} className="mx-auto text-gray-300 mb-4" />
+                    <p className="text-gray-500">Loading map...</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               <div className="bg-gradient-to-r from-orange-50 to-green-50 p-8 md:p-12">
                 <div className="max-w-3xl mx-auto text-center">
@@ -371,7 +456,7 @@ export default function StoresPage() {
                     />
                     <button
                       type="submit"
-                      className="px-8 py-3 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all whitespace-nowGrap"
+                      className="px-8 py-3 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all whitespace-nowrap"
                     >
                       Send Request
                     </button>

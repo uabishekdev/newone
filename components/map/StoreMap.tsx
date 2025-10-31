@@ -2,12 +2,13 @@
 
 import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 import { useState, memo } from "react";
-import { DistributionLocation } from "@/lib/types/location";
+import { BaseLocation } from "@/lib/types/location";
 
 interface StoreMapProps {
-  stores: DistributionLocation[];
+  stores: BaseLocation[];
   center: { lat: number; lng: number };
-  onStoreClick?: (store: DistributionLocation) => void;
+  onStoreClick?: (store: BaseLocation) => void;
+  selectedStore?: BaseLocation | null;
 }
 
 const mapContainerStyle = {
@@ -25,8 +26,7 @@ const mapOptions = {
 };
 
 function StoreMapComponent({ stores, center, onStoreClick }: StoreMapProps) {
-  const [selectedStore, setSelectedStore] =
-    useState<DistributionLocation | null>(null);
+  const [selectedStore, setSelectedStore] = useState<BaseLocation | null>(null);
 
   return (
     <GoogleMap
@@ -60,7 +60,21 @@ function StoreMapComponent({ stores, center, onStoreClick }: StoreMapProps) {
           onCloseClick={() => setSelectedStore(null)}
         >
           <div className="p-2">
-            <h3 className="font-bold text-sm">{selectedStore.locationName}</h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-bold text-sm">
+                {selectedStore.locationName || selectedStore.address || 'Location'}
+              </h3>
+              <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                selectedStore.locationType === 'farm' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-blue-500 text-white'
+              }`}>
+                {selectedStore.locationType === 'farm' ? '🌾' : '🏪'}
+              </span>
+            </div>
+            {selectedStore.address && (
+              <p className="text-xs text-gray-600 mt-1">{selectedStore.address}</p>
+            )}
             {selectedStore.mobileNumber && (
               <p className="text-xs text-gray-600 mt-1">
                 {selectedStore.mobileNumber}
