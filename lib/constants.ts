@@ -18,3 +18,43 @@ export const CANVAS_CONFIG = {
   BACKGROUND_COLOR: "#ffffff",
   TEXT_COLOR: "#2E2E2E",
 } as const;
+
+//frames.ts
+export interface Frame {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export const FRAMES: Frame[] = [
+  {
+    id: "none",
+    name: "No Frame",
+    description: "Clean look",
+  },
+  {
+    id: "classic",
+    name: "Classic",
+    description: "White border",
+  },
+  {
+    id: "polaroid",
+    name: "Polaroid",
+    description: "Vintage style",
+  },
+  {
+    id: "modern",
+    name: "Modern",
+    description: "Sleek edge",
+  },
+  {
+    id: "vintage",
+    name: "Vintage",
+    description: "Retro frame",
+  },
+  {
+    id: "wood",
+    name: "Wooden",
+    description: "Rustic charm",
+  },
+];

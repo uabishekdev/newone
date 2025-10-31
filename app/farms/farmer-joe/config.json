@@ -72,6 +72,22 @@
       "description": "Farm Fresh"
     }
   ],
+  "hashtags": [
+    "#freshmilk",
+    "#farmfresh",
+    "#dairyfarm",
+    "#wholesomefood",
+    "#healthylifestyle",
+    "#fitfood",
+    "#proteinfood",
+    "#localbusiness",
+    "#sustainablefarming",
+    "#realfood",
+    "#NoCornNoSoyNoSilage",
+    "#cowcare",
+    "#farmerjoes"
+  ],
+  "defaultCaption": "Experience the pure taste of farm-fresh dairy! 🥛",
   "theme": {
     "colors": {
       "primary": "#D2691E",

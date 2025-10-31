@@ -23,10 +23,19 @@ export default function StoresPage() {
     lat: number;
     lng: number;
   } | null>(null);
+  const [farmLocation, setFarmLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [customerLocation, setCustomerLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const searchInputRef = useRef<string>("");
+  const searchCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const { isLoaded, loadError } = useJsApiLoader({
@@ -42,19 +51,43 @@ export default function StoresPage() {
 
   const loadAllStores = async () => {
     setLoading(true);
+    setError(null);
+    setHasSearched(false);
+    setCustomerLocation(null);
+    searchCoordsRef.current = null;
 
     try {
       const response = await getAllLocations("");
 
-      let allStores = response.allLocations.filter(
-        (store) => store.locationType === "distribution"
+      let allLocations: BaseLocation[] = [];
+
+      if ((response as any).data && Array.isArray((response as any).data)) {
+        allLocations = (response as any).data;
+      } else if (
+        response.allLocations &&
+        Array.isArray(response.allLocations)
+      ) {
+        allLocations = response.allLocations;
+      }
+
+      let allStores = allLocations.filter(
+        (store: BaseLocation) => store.locationType === "distribution"
       );
 
+      const farmLoc = allLocations.find(
+        (loc: BaseLocation) => loc.locationType === "farm"
+      );
+      if (farmLoc) {
+        setFarmLocation({
+          lat: farmLoc.coordinates.coordinates[1],
+          lng: farmLoc.coordinates.coordinates[0],
+        });
+      }
+
       const seenIds = new Set<string>();
-      allStores = allStores.filter((store) => {
+      allStores = allStores.filter((store: BaseLocation) => {
         const uniqueId = `${store.id}-${store.locationType}`;
         if (seenIds.has(uniqueId)) {
-          console.warn("Duplicate store found:", store.locationName, store.id);
           return false;
         }
         seenIds.add(uniqueId);
@@ -70,7 +103,7 @@ export default function StoresPage() {
         });
       } else {
         setStores([]);
-        setMapCenter(null);
+        setMapCenter(farmLocation || null);
       }
     } catch (error) {
       setError("Unable to load stores. Please refresh the page.");
@@ -81,44 +114,111 @@ export default function StoresPage() {
     }
   };
 
-  const handleAddressSelect = async (address: string) => {
+  const handleAddressSelect = async (
+    address: string,
+    coordinates?: { lat: number; lng: number }
+  ) => {
     setError(null);
     setLoading(true);
     setHasSearched(true);
 
+    if (coordinates) {
+      searchCoordsRef.current = coordinates;
+      console.log("Coordinates from autocomplete:", coordinates);
+    }
+
     try {
       const response = await getAllLocations(address);
 
-      let allStores = response.allLocations.filter(
-        (store) => store.locationType === "distribution"
+      console.log(" Full Backend Response", response);
+
+      let allLocations: BaseLocation[] = [];
+
+      if ((response as any).data && Array.isArray((response as any).data)) {
+        allLocations = (response as any).data;
+        console.log("Using response.data");
+      } else if (
+        response.allLocations &&
+        Array.isArray(response.allLocations)
+      ) {
+        allLocations = response.allLocations;
+        console.log("Using response.allLocations");
+      }
+
+      console.log("All Locations Array:", allLocations);
+      console.log("Total locations:", allLocations.length);
+
+      let allStores = allLocations.filter(
+        (store: BaseLocation) => store.locationType === "distribution"
       );
 
+      console.log("Distribution stores:", allStores.length);
+
+      const farmLoc = allLocations.find(
+        (loc: BaseLocation) => loc.locationType === "farm"
+      );
+      if (farmLoc) {
+        setFarmLocation({
+          lat: farmLoc.coordinates.coordinates[1],
+          lng: farmLoc.coordinates.coordinates[0],
+        });
+      }
+
+      const userLoc = allLocations.find(
+        (loc: BaseLocation) => loc.locationType === "user"
+      );
+
+      console.log("Looking for user location...");
+      console.log("User Location Found:", userLoc);
+
+      if (userLoc) {
+        const customerLoc = {
+          lat: userLoc.coordinates.coordinates[1],
+          lng: userLoc.coordinates.coordinates[0],
+        };
+        setCustomerLocation(customerLoc);
+        setMapCenter(customerLoc);
+      } else if (searchCoordsRef.current) {
+        setCustomerLocation(searchCoordsRef.current);
+        setMapCenter(searchCoordsRef.current);
+      } else if (response.searchCoordinates) {
+        const customerLoc = {
+          lat: response.searchCoordinates.coordinates[1],
+          lng: response.searchCoordinates.coordinates[0],
+        };
+        console.log(
+          " Setting Customer Location from searchCoordinates:",
+          customerLoc
+        );
+        setCustomerLocation(customerLoc);
+        setMapCenter(customerLoc);
+      } else {
+        console.log(" No user location found in any source");
+        setCustomerLocation(null);
+      }
+
       const seenIds = new Set<string>();
-      allStores = allStores.filter((store) => {
+      allStores = allStores.filter((store: BaseLocation) => {
         const uniqueId = `${store.id}-${store.locationType}`;
         if (seenIds.has(uniqueId)) {
-          console.warn("Duplicate store found:", store.locationName, store.id);
           return false;
         }
         seenIds.add(uniqueId);
         return true;
       });
 
-      console.log("=== STORES ORDER FROM API (after dedup) ===");
-      allStores.forEach((s, i) => {
-        console.log(`${i + 1}. ${s.locationName} - ${s.distanceInMiles} miles`);
-      });
-
       if (allStores.length > 0) {
         setStores(allStores);
 
-        if (response.searchCoordinates) {
-          setMapCenter({
-            lat: response.searchCoordinates.coordinates[1],
-            lng: response.searchCoordinates.coordinates[0],
-          });
-        } else {
-          const firstValidStore = allStores.find((s) => s.distanceInMiles > 0);
+        if (
+          !userLoc &&
+          !searchCoordsRef.current &&
+          !response.searchCoordinates &&
+          allStores.length > 0
+        ) {
+          const firstValidStore = allStores.find(
+            (s: BaseLocation) => s.distanceInMiles > 0
+          );
           if (firstValidStore) {
             setMapCenter({
               lat: firstValidStore.coordinates.coordinates[1],
@@ -127,7 +227,9 @@ export default function StoresPage() {
           }
         }
 
-        const nearestStore = allStores.find((s) => s.distanceInMiles > 0);
+        const nearestStore = allStores.find(
+          (s: BaseLocation) => s.distanceInMiles > 0
+        );
         setSelectedStore(nearestStore || allStores[0]);
       } else {
         setError(
@@ -136,6 +238,7 @@ export default function StoresPage() {
         setStores([]);
       }
     } catch (error) {
+      console.error("Error in handleAddressSelect:", error);
       setError("Unable to find location. Please try a different address.");
     } finally {
       setLoading(false);
@@ -146,10 +249,34 @@ export default function StoresPage() {
     searchInputRef.current = value;
   };
 
-  const handleGoClick = () => {
+  const handleClearSearch = () => {
+    searchCoordsRef.current = null;
+    loadAllStores();
+  };
+
+  const handleGoClick = async () => {
     const searchValue = searchInputRef.current.trim();
     if (searchValue) {
-      handleAddressSelect(searchValue);
+      if (isLoaded && !searchCoordsRef.current) {
+        const geocoder = new google.maps.Geocoder();
+        try {
+          const result = await geocoder.geocode({ address: searchValue });
+          if (result.results[0]?.geometry?.location) {
+            const coords = {
+              lat: result.results[0].geometry.location.lat(),
+              lng: result.results[0].geometry.location.lng(),
+            };
+            handleAddressSelect(searchValue, coords);
+          } else {
+            handleAddressSelect(searchValue);
+          }
+        } catch (error) {
+          console.error("Geocoding error:", error);
+          handleAddressSelect(searchValue);
+        }
+      } else {
+        handleAddressSelect(searchValue, searchCoordsRef.current || undefined);
+      }
     } else {
       setError("Please enter an address or zipcode");
     }
@@ -207,7 +334,6 @@ export default function StoresPage() {
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1 flex flex-col">
-          {/* Search Bar */}
           <div className="bg-white border-b">
             <div className="container mx-auto px-4 py-8">
               <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-6 text-gray-900">
@@ -219,6 +345,7 @@ export default function StoresPage() {
                     isLoaded={isLoaded}
                     onAddressSelect={handleAddressSelect}
                     onChange={handleSearchChange}
+                    onClear={handleClearSearch}
                     placeholder="Enter address or zipcode (e.g., 1010 10th St, Modesto, CA)"
                     disabled={loading}
                     countryCode="us"
@@ -287,52 +414,50 @@ export default function StoresPage() {
                 )}
 
                 <div className="space-y-3">
-                  {(() => {
-                    return stores.map((store, index) => {
-                      const uniqueKey = `${store.id}-${store.locationType}-${index}`;
+                  {stores.map((store, index) => {
+                    const uniqueKey = `${store.id}-${store.locationType}-${index}`;
 
-                      return (
-                        <div
-                          key={uniqueKey}
-                          onClick={() => handleStoreClick(store)}
-                          className={`p-4 border rounded-lg cursor-pointer transition-all shadow-sm ${
-                            isSameStore(selectedStore, store)
-                              ? "bg-orange-50 border-orange-500"
-                              : "bg-white border-gray-200 hover:bg-gray-50"
-                          }`}
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between gap-2 mb-1">
-                              <h3 className="font-bold text-base">
-                                {store.locationName ||
-                                  store.address ||
-                                  "Location"}
-                              </h3>
+                    return (
+                      <div
+                        key={uniqueKey}
+                        onClick={() => handleStoreClick(store)}
+                        className={`p-4 border rounded-lg cursor-pointer transition-all shadow-sm ${
+                          isSameStore(selectedStore, store)
+                            ? "bg-orange-50 border-orange-500"
+                            : "bg-white border-gray-200 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <h3 className="font-bold text-base">
+                              {store.locationName ||
+                                store.address ||
+                                "Location"}
+                            </h3>
 
-                              {hasSearched &&
-                                store.distanceInMiles !== undefined &&
-                                store.distanceInMiles > 0 && (
-                                  <span className="text-xs font-bold text-blue-600 whitespace-nowrap">
-                                    {formatDistance(store.distanceInMiles)}
-                                  </span>
-                                )}
-                            </div>
-                            {store.address && (
-                              <p className="text-sm text-gray-600 mb-1">
-                                {store.address}
-                              </p>
-                            )}
-                            {store.mobileNumber && (
-                              <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
-                                <Phone size={14} />
-                                <span>{store.mobileNumber}</span>
-                              </div>
-                            )}
+                            {hasSearched &&
+                              store.distanceInMiles !== undefined &&
+                              store.distanceInMiles > 0 && (
+                                <span className="text-xs font-bold text-blue-600 whitespace-nowrap">
+                                  {formatDistance(store.distanceInMiles)}
+                                </span>
+                              )}
                           </div>
+                          {store.address && (
+                            <p className="text-sm text-gray-600 mb-1">
+                              {store.address}
+                            </p>
+                          )}
+                          {store.mobileNumber && (
+                            <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
+                              <Phone size={14} />
+                              <span>{store.mobileNumber}</span>
+                            </div>
+                          )}
                         </div>
-                      );
-                    });
-                  })()}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {!loading && stores.length === 0 && !error && (
@@ -344,7 +469,6 @@ export default function StoresPage() {
               </div>
             </div>
 
-            {/* Map Column */}
             <div className="flex-1 flex flex-col">
               {mapCenter ? (
                 <div className="flex-1 h-[400px] md:h-auto relative">
@@ -353,7 +477,15 @@ export default function StoresPage() {
                     center={mapCenter}
                     selectedStore={selectedStore}
                     onStoreClick={handleStoreClick}
+                    farmLocation={farmLocation}
+                    customerLocation={customerLocation}
                   />
+                  {customerLocation && (
+                    <div className="absolute top-4 left-4 bg-white px-3 py-2 rounded-lg shadow-md text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      Your Search Location
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex-1 h-[400px] md:h-auto flex items-center justify-center bg-gray-100">

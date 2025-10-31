@@ -1,4 +1,3 @@
-// Path: app/pickup/page.tsx
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
@@ -63,9 +62,7 @@ export default function PickupPage() {
         setPickupData({});
       }
     } catch (error) {
-      setError(
-        "Unable to load pickup locations. Please refresh the page."
-      );
+      setError("Unable to load pickup locations. Please refresh the page.");
       setPickupData({});
     } finally {
       setLoading(false);
@@ -112,6 +109,10 @@ export default function PickupPage() {
     searchInputRef.current = value;
   };
 
+  const handleClearSearch = () => {
+    loadAllPickups();
+  };
+
   const handleGoClick = () => {
     const searchValue = searchInputRef.current.trim();
     handleAddressSelect(searchValue);
@@ -126,10 +127,7 @@ export default function PickupPage() {
   );
 
   const getNearestLabel = (location: PickupLocation) => {
-    // Only show the label if a search has been performed AND the item is marked as nearest
     if (!hasSearched || !location.isNearest) return null;
-
-    // Use the distanceInMiles from the location object
     return `Nearest you - ${Math.round(location.distanceInMiles)} miles`;
   };
 
@@ -221,6 +219,7 @@ export default function PickupPage() {
                     isLoaded={isLoaded}
                     onAddressSelect={handleAddressSelect}
                     onChange={handleSearchChange}
+                    onClear={handleClearSearch}
                     placeholder="805 Blvd, Street 8A, Palo, 18239"
                     disabled={loading}
                     countryCode="us"
@@ -281,7 +280,7 @@ export default function PickupPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {locations.map((location) => {
                           const nearestLabel = getNearestLabel(location);
-                          const isNearest = !!nearestLabel; // Highlight only if the label exists
+                          const isNearest = !!nearestLabel;
                           const nearestBg =
                             (farmConfig.theme.colors.heroHeading || "#E26102") +
                             "26";

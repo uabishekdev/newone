@@ -5,8 +5,12 @@ import { Search, X } from "lucide-react";
 
 interface AddressAutocompleteProps {
   isLoaded: boolean;
-  onAddressSelect: (address: string) => void;
+  onAddressSelect: (
+    address: string,
+    coordinates?: { lat: number; lng: number }
+  ) => void;
   onChange?: (value: string) => void;
+  onClear?: () => void;
   placeholder?: string;
   disabled?: boolean;
   countryCode?: string;
@@ -16,6 +20,7 @@ export function AddressAutocomplete({
   isLoaded,
   onAddressSelect,
   onChange,
+  onClear,
   placeholder = "Enter address or zipcode",
   disabled = false,
   countryCode = "us",
@@ -42,9 +47,13 @@ export function AddressAutocomplete({
           "place_changed",
           () => {
             const place = autocompleteRef.current?.getPlace();
-            if (place?.formatted_address) {
+            if (place?.formatted_address && place?.geometry?.location) {
               setQuery(place.formatted_address);
-              onAddressSelect(place.formatted_address);
+              const coords = {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng(),
+              };
+              onAddressSelect(place.formatted_address, coords);
             }
           }
         );
@@ -69,14 +78,30 @@ export function AddressAutocomplete({
       inputRef.current.value = "";
     }
     onChange?.("");
+    onClear?.();
     inputRef.current?.focus();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
       if (query.trim()) {
-        onAddressSelect(query);
+        const geocoder = new google.maps.Geocoder();
+        try {
+          const result = await geocoder.geocode({ address: query });
+          if (result.results[0]?.geometry?.location) {
+            const coords = {
+              lat: result.results[0].geometry.location.lat(),
+              lng: result.results[0].geometry.location.lng(),
+            };
+            onAddressSelect(query, coords);
+          } else {
+            onAddressSelect(query);
+          }
+        } catch (error) {
+          console.error("Geocoding error:", error);
+          onAddressSelect(query);
+        }
       }
     }
   };
