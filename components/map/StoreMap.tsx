@@ -18,15 +18,26 @@ const mapContainerStyle = {
 };
 
 const mapOptions = {
-  disableDefaultUI: false,
+  disableDefaultUI: true,
   zoomControl: true,
   mapTypeControl: false,
   streetViewControl: false,
-  fullscreenControl: true,
+  fullscreenControl: false, 
 };
 
-function StoreMapComponent({ stores, center, onStoreClick }: StoreMapProps) {
-  const [selectedStore, setSelectedStore] = useState<BaseLocation | null>(null);
+const defaultIconUrl = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+const selectedIconUrl =
+  "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
+
+function StoreMapComponent({
+  stores,
+  center,
+  onStoreClick,
+  selectedStore: controlledSelectedStore,
+}: StoreMapProps) {
+  const [infoWindowStore, setInfoWindowStore] = useState<BaseLocation | null>(
+    null
+  );
 
   return (
     <GoogleMap
@@ -39,50 +50,63 @@ function StoreMapComponent({ stores, center, onStoreClick }: StoreMapProps) {
         const lat = store.coordinates.coordinates[1];
         const lng = store.coordinates.coordinates[0];
 
+        const isSelected =
+          controlledSelectedStore &&
+          controlledSelectedStore.id === store.id &&
+          controlledSelectedStore.locationType === store.locationType;
+
         return (
           <Marker
-            key={store.id}
+            key={`${store.id}-${store.locationType}`}
             position={{ lat, lng }}
             onClick={() => {
-              setSelectedStore(store);
+              setInfoWindowStore(store);
               onStoreClick?.(store);
             }}
+            icon={isSelected ? selectedIconUrl : defaultIconUrl}
+            zIndex={isSelected ? 100 : 1}
           />
         );
       })}
 
-      {selectedStore && (
+      {infoWindowStore && (
         <InfoWindow
           position={{
-            lat: selectedStore.coordinates.coordinates[1],
-            lng: selectedStore.coordinates.coordinates[0],
+            lat: infoWindowStore.coordinates.coordinates[1],
+            lng: infoWindowStore.coordinates.coordinates[0],
           }}
-          onCloseClick={() => setSelectedStore(null)}
+          onCloseClick={() => setInfoWindowStore(null)}
         >
           <div className="p-2">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-bold text-sm">
-                {selectedStore.locationName || selectedStore.address || 'Location'}
+                {infoWindowStore.locationName ||
+                  infoWindowStore.address ||
+                  "Location"}
               </h3>
-              <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
-                selectedStore.locationType === 'farm' 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-blue-500 text-white'
-              }`}>
-                {selectedStore.locationType === 'farm' ? '🌾' : '🏪'}
+              <span
+                className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                  infoWindowStore.locationType === "farm"
+                    ? "bg-green-500 text-white"
+                    : "bg-blue-500 text-white"
+                }`}
+              >
+                {infoWindowStore.locationType === "farm" ? "🌾" : "🏪"}
               </span>
             </div>
-            {selectedStore.address && (
-              <p className="text-xs text-gray-600 mt-1">{selectedStore.address}</p>
-            )}
-            {selectedStore.mobileNumber && (
+            {infoWindowStore.address && (
               <p className="text-xs text-gray-600 mt-1">
-                {selectedStore.mobileNumber}
+                {infoWindowStore.address}
               </p>
             )}
-            {selectedStore.distanceInMiles !== undefined && (
+            {infoWindowStore.mobileNumber && (
+              <p className="text-xs text-gray-600 mt-1">
+                {infoWindowStore.mobileNumber}
+              </p>
+            )}
+            {infoWindowStore.distanceInMiles !== undefined && (
               <p className="text-xs text-blue-600 font-semibold mt-1">
-                {selectedStore.distanceInMiles.toFixed(1)} miles away
+                {infoWindowStore.distanceInMiles.toFixed(1)} miles away
               </p>
             )}
           </div>

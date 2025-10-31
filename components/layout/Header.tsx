@@ -28,7 +28,12 @@ export function Header() {
     e: React.MouseEvent<HTMLAnchorElement>,
     sectionId: string
   ) => {
-    smoothScrollTo(e, sectionId, () => setMobileMenuOpen(false));
+    if (window.location.pathname === "/") {
+      smoothScrollTo(e, sectionId, () => setMobileMenuOpen(false));
+    } else {
+      window.location.href = `/#${sectionId}`;
+      setMobileMenuOpen(false);
+    }
   };
 
   return (
@@ -41,17 +46,18 @@ export function Header() {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <div className="flex items-center">
-              <img
-                src="/images/logo.png"
-                alt={config.name}
-                className="h-12 md:h-14 w-auto"
-              />
+              <a href="/">
+                <img
+                  src="/images/logo.png"
+                  alt={config.name}
+                  className="h-12 md:h-14 w-auto"
+                />
+              </a>
             </div>
 
-            {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8 ml-8">
               <a
-                href="#products"
+                href="/#products"
                 onClick={(e) => handleNavClick(e, "products")}
                 className="font-semibold hover:opacity-70 transition-opacity text-base"
                 style={brownColor}
@@ -74,10 +80,9 @@ export function Header() {
               </a>
             </nav>
 
-            {/* Desktop Actions */}
             <div className="hidden lg:flex items-center gap-4">
               <a
-                href="#our-story"
+                href="/#our-story"
                 onClick={(e) => handleNavClick(e, "our-story")}
                 className="font-semibold hover:opacity-70 transition-opacity text-base"
                 style={brownColor}
@@ -95,7 +100,6 @@ export function Header() {
               </a>
             </div>
 
-            {/* Mobile Menu Toggle */}
             <button
               className="lg:hidden p-2"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -114,7 +118,6 @@ export function Header() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div>
-          {/* Overlay */}
           <div
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
@@ -145,7 +148,7 @@ export function Header() {
               <ul className="space-y-1">
                 <li>
                   <a
-                    href="#products"
+                    href="/#products"
                     onClick={(e) => handleNavClick(e, "products")}
                     className="block py-3 px-4 rounded-lg font-semibold hover:bg-white/50 transition-all"
                     style={brownColor}
@@ -175,7 +178,7 @@ export function Header() {
                 </li>
                 <li>
                   <a
-                    href="#our-story"
+                    href="/#our-story"
                     onClick={(e) => handleNavClick(e, "our-story")}
                     className="block py-3 px-4 rounded-lg font-semibold hover:bg-white/50 transition-all"
                     style={brownColor}

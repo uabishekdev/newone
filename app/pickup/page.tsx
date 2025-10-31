@@ -1,6 +1,7 @@
+// Path: app/pickup/page.tsx
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -37,8 +38,9 @@ export default function PickupPage() {
   const [pickupData, setPickupData] = useState<{
     [day: string]: PickupLocation[];
   }>({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
   const searchInputRef = useRef<string>("");
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -47,6 +49,35 @@ export default function PickupPage() {
     libraries,
   });
 
+  const loadAllPickups = async () => {
+    setError(null);
+    setLoading(true);
+    setHasSearched(false);
+
+    try {
+      const response = await getPickupLocations("");
+      if (response.data && Object.keys(response.data).length > 0) {
+        setPickupData(response.data);
+      } else {
+        setError("No pickup locations are currently available.");
+        setPickupData({});
+      }
+    } catch (error) {
+      setError(
+        "Unable to load pickup locations. Please refresh the page."
+      );
+      setPickupData({});
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoaded) {
+      loadAllPickups();
+    }
+  }, [isLoaded]);
+
   const handleAddressSelect = async (address: string) => {
     if (!address) {
       setError("Please enter a valid address or zipcode.");
@@ -54,6 +85,7 @@ export default function PickupPage() {
     }
     setError(null);
     setLoading(true);
+    setHasSearched(true);
 
     try {
       const response = await getPickupLocations(address);
@@ -93,28 +125,12 @@ export default function PickupPage() {
     [pickupData]
   );
 
-  const allLocationsSorted = useMemo(() => {
-    return Object.values(pickupData)
-      .flat()
-      .sort((a, b) => a.distanceInMiles - b.distanceInMiles);
-  }, [pickupData]);
+  const getNearestLabel = (location: PickupLocation) => {
+    // Only show the label if a search has been performed AND the item is marked as nearest
+    if (!hasSearched || !location.isNearest) return null;
 
-  const nearestTwoIds = allLocationsSorted.slice(0, 2).map((loc) => loc.id);
-
-  const isNearestTwo = (locationId: string) => {
-    return nearestTwoIds.includes(locationId);
-  };
-
-  const getNearestLabel = (locationId: string) => {
-    const index = allLocationsSorted.findIndex((loc) => loc.id === locationId);
-    const location = allLocationsSorted[index];
-
-    if (!location || location.distanceInMiles > 100) return null;
-
-    if (index === 0 || index === 1) {
-      return `Nearest you - ${Math.round(location.distanceInMiles)} miles`;
-    }
-    return null;
+    // Use the distanceInMiles from the location object
+    return `Nearest you - ${Math.round(location.distanceInMiles)} miles`;
   };
 
   if (!apiKey) {
@@ -224,7 +240,6 @@ export default function PickupPage() {
                       "Find nearest pickup point"
                     )}
                   </button>
-                  <MapPin size={24} className="text-blue-600 flex-shrink-0" />
                 </div>
               </div>
 
@@ -265,8 +280,8 @@ export default function PickupPage() {
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {locations.map((location) => {
-                          const isNearest = isNearestTwo(location.id);
-                          const nearestLabel = getNearestLabel(location.id);
+                          const nearestLabel = getNearestLabel(location);
+                          const isNearest = !!nearestLabel; // Highlight only if the label exists
                           const nearestBg =
                             (farmConfig.theme.colors.heroHeading || "#E26102") +
                             "26";
@@ -347,12 +362,15 @@ export default function PickupPage() {
               </div>
             )}
 
-            {!loading && sortedDays.length === 0 && !error && (
+            {!loading && sortedDays.length === 0 && (
               <div className="text-center py-20">
                 <MapPin size={64} className="mx-auto text-gray-300 mb-4" />
                 <p className="text-xl text-gray-500">
-                  Enter your address to find pickup locations
+                  {error
+                    ? "Could not load locations"
+                    : "No pickup locations found"}
                 </p>
+                {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
               </div>
             )}
 

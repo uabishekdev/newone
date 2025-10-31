@@ -47,7 +47,7 @@ export default function StoresPage() {
       const response = await getAllLocations("");
 
       let allStores = response.allLocations.filter(
-        (store) => store.locationType !== "user"
+        (store) => store.locationType === "distribution"
       );
 
       const seenIds = new Set<string>();
@@ -90,7 +90,7 @@ export default function StoresPage() {
       const response = await getAllLocations(address);
 
       let allStores = response.allLocations.filter(
-        (store) => store.locationType !== "user"
+        (store) => store.locationType === "distribution"
       );
 
       const seenIds = new Set<string>();
@@ -167,17 +167,6 @@ export default function StoresPage() {
     return `${distanceInMiles.toFixed(1)} miles`;
   };
 
-  const getLocationTypeLabel = (locationType: string) => {
-    switch (locationType) {
-      case "farm":
-        return {  label: "Farm", color: "bg-green-500" };
-      case "distribution":
-        return { label: "Store", color: "bg-blue-500" };
-      default:
-        return { label: "Location", color: "bg-gray-500" };
-    }
-  };
-
   const isSameStore = (store1: BaseLocation | null, store2: BaseLocation) => {
     if (!store1) return false;
     return (
@@ -218,6 +207,7 @@ export default function StoresPage() {
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1 flex flex-col">
+          {/* Search Bar */}
           <div className="bg-white border-b">
             <div className="container mx-auto px-4 py-8">
               <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-6 text-gray-900">
@@ -298,73 +288,46 @@ export default function StoresPage() {
 
                 <div className="space-y-3">
                   {(() => {
-                    const nearestIndex = stores.findIndex(
-                      (s) => s.distanceInMiles > 0
-                    );
                     return stores.map((store, index) => {
-                      const locationTypeInfo = getLocationTypeLabel(
-                        store.locationType
-                      );
-                      const isNearest = index === nearestIndex && hasSearched;
                       const uniqueKey = `${store.id}-${store.locationType}-${index}`;
 
                       return (
                         <div
                           key={uniqueKey}
                           onClick={() => handleStoreClick(store)}
-                          className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                          className={`p-4 border rounded-lg cursor-pointer transition-all shadow-sm ${
                             isSameStore(selectedStore, store)
                               ? "bg-orange-50 border-orange-500"
-                              : isNearest
-                              ? "bg-green-50 border-green-400"
-                              : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                              : "bg-white border-gray-200 hover:bg-gray-50"
                           }`}
                         >
-                          <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-full bg-white border border-gray-200">
-                              <MapPin size={20} className="text-orange-600" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-start justify-between gap-2 mb-1">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <h3 className="font-bold text-sm">
-                                    {store.locationName ||
-                                      store.address ||
-                                      "Location"}
-                                  </h3>
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <h3 className="font-bold text-base">
+                                {store.locationName ||
+                                  store.address ||
+                                  "Location"}
+                              </h3>
 
-                                  <span
-                                    className={`px-2 py-0.5 ${locationTypeInfo.color} text-white text-xs font-bold rounded-full`}
-                                  >
-                                    {locationTypeInfo.label}
+                              {hasSearched &&
+                                store.distanceInMiles !== undefined &&
+                                store.distanceInMiles > 0 && (
+                                  <span className="text-xs font-bold text-blue-600 whitespace-nowrap">
+                                    {formatDistance(store.distanceInMiles)}
                                   </span>
-
-                                  {isNearest && (
-                                    <span className="px-2 py-0.5 bg-green-500 text-white text-xs font-bold rounded-full">
-                                      Nearest
-                                    </span>
-                                  )}
-                                </div>
-                                {hasSearched &&
-                                  store.distanceInMiles !== undefined &&
-                                  store.distanceInMiles > 0 && (
-                                    <span className="text-xs font-bold text-blue-600 whitespace-nowrap">
-                                      {formatDistance(store.distanceInMiles)}
-                                    </span>
-                                  )}
-                              </div>
-                              {store.address && (
-                                <p className="text-xs text-gray-600 mb-1">
-                                  {store.address}
-                                </p>
-                              )}
-                              {store.mobileNumber && (
-                                <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
-                                  <Phone size={12} />
-                                  <span>{store.mobileNumber}</span>
-                                </div>
-                              )}
+                                )}
                             </div>
+                            {store.address && (
+                              <p className="text-sm text-gray-600 mb-1">
+                                {store.address}
+                              </p>
+                            )}
+                            {store.mobileNumber && (
+                              <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
+                                <Phone size={14} />
+                                <span>{store.mobileNumber}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       );
@@ -381,6 +344,7 @@ export default function StoresPage() {
               </div>
             </div>
 
+            {/* Map Column */}
             <div className="flex-1 flex flex-col">
               {mapCenter ? (
                 <div className="flex-1 h-[400px] md:h-auto relative">
@@ -390,21 +354,6 @@ export default function StoresPage() {
                     selectedStore={selectedStore}
                     onStoreClick={handleStoreClick}
                   />
-                  {stores.length > 0 && (
-                    <div className="absolute top-4 left-4 bg-white px-3 py-2 rounded-lg shadow-lg z-10">
-                      <p className="text-sm font-semibold">
-                        {stores.length} location{stores.length !== 1 ? "s" : ""}
-                      </p>
-                      {hasSearched &&
-                        stores[0] &&
-                        stores[0].distanceInMiles !== undefined &&
-                        stores[0].distanceInMiles > 0 && (
-                          <p className="text-xs text-gray-600">
-                            Nearest: {stores[0].distanceInMiles.toFixed(1)} mi
-                          </p>
-                        )}
-                    </div>
-                  )}
                 </div>
               ) : (
                 <div className="flex-1 h-[400px] md:h-auto flex items-center justify-center bg-gray-100">
@@ -414,57 +363,57 @@ export default function StoresPage() {
                   </div>
                 </div>
               )}
-
-              <div className="bg-gradient-to-r from-orange-50 to-green-50 p-8 md:p-12">
-                <div className="max-w-3xl mx-auto text-center">
-                  <div className="flex justify-center mb-4">
-                    <div className="relative">
-                      <img
-                        src="/images/milk-bottle-large.png"
-                        alt="Milk bottle"
-                        className="h-24 w-auto"
-                      />
-                      <div className="absolute -top-2 -right-2 bg-orange-500 rounded-full p-2">
-                        <MapPin size={20} className="text-white" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
-                    Didn't find a store nearby?
-                  </h2>
-                  <p className="text-gray-700 text-lg mb-6">
-                    Don't worry – share your nearest store with us and we'll try
-                    to get Joe's products on their shelves soon!
-                  </p>
-
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const formData = new FormData(e.currentTarget);
-                      const storeName = formData.get("storeName");
-                      e.currentTarget.reset();
-                    }}
-                    className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto"
-                  >
-                    <input
-                      type="text"
-                      name="storeName"
-                      placeholder="Enter store name"
-                      required
-                      className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-gray-800"
-                    />
-                    <button
-                      type="submit"
-                      className="px-8 py-3 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all whitespace-nowrap"
-                    >
-                      Send Request
-                    </button>
-                  </form>
-                </div>
-              </div>
             </div>
           </div>
+
+          <section className="bg-white p-8 md:p-12 border-t">
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="flex justify-center mb-4">
+                <div className="relative">
+                  <img
+                    src="/images/milk-bottle-large.png"
+                    alt="Milk bottle"
+                    className="h-36 w-auto"
+                  />
+                  <div className="absolute -top-2 -right-2 bg-orange-500 rounded-full p-2">
+                    <MapPin size={20} className="text-white" />
+                  </div>
+                </div>
+              </div>
+
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
+                Didn't find a store nearby?
+              </h2>
+              <p className="text-gray-700 text-lg mb-6">
+                Don't worry – share your nearest store with us and we'll try to
+                get Joe's products on their shelves soon!
+              </p>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const storeName = formData.get("storeName");
+                  e.currentTarget.reset();
+                }}
+                className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto"
+              >
+                <input
+                  type="text"
+                  name="storeName"
+                  placeholder="Enter store name"
+                  required
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-gray-800"
+                />
+                <button
+                  type="submit"
+                  className="px-8 py-3 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-all whitespace-nowrap"
+                >
+                  Send Request
+                </button>
+              </form>
+            </div>
+          </section>
         </main>
         <Footer />
       </div>
