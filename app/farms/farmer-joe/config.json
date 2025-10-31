@@ -5,18 +5,72 @@
   "domain": "farmerjoe.com",
   "layout": "boxed",
   "sections": [
-    { "type": "hero", "variant": "centered", "props": { "fullHeight": false, "spacing": "compact" } },
-    { "type": "products", "variant": "carousel", "props": { 
-      "maxWidth": "container", 
-      "padding": "medium",
-      "imageSize": "small",
-      "itemsPerRow": 4,
-      "showArrows": true,
-      "autoplay": true
-    }},
-    { "type": "locations", "variant": "map", "props": { "maxWidth": "narrow", "spacing": "medium" } },
-    { "type": "eventShare", "variant": "card", "props": { "maxWidth": "narrow", "spacing": "medium" } },
-    { "type": "distributor", "variant": "form", "props": { "maxWidth": "narrow", "spacing": "medium" } }
+    {
+      "type": "hero",
+      "variant": "centered",
+      "props": { "fullHeight": false, "spacing": "compact" }
+    },
+    {
+      "type": "products",
+      "variant": "carousel",
+      "props": {
+        "maxWidth": "container",
+        "padding": "medium",
+        "imageSize": "small",
+        "itemsPerRow": 4,
+        "showArrows": true,
+        "autoplay": true
+      }
+    },
+    {
+      "type": "locations",
+      "variant": "map",
+      "props": { "maxWidth": "narrow", "spacing": "medium" }
+    },
+    {
+      "type": "eventShare",
+      "variant": "card",
+      "props": { "maxWidth": "narrow", "spacing": "medium" }
+    },
+    {
+      "type": "distributor",
+      "variant": "form",
+      "props": { "maxWidth": "narrow", "spacing": "medium" }
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "Sheep Milk",
+      "image": "/images/sheep-milk.png",
+      "sizes": ["Half gallon (64 oz)", "Quart (32 oz)"],
+      "price": "$ 8.99",
+      "description": "Premium Quality"
+    },
+    {
+      "id": "2",
+      "name": "Raw A2 Milk",
+      "image": "/images/a2-milk.png",
+      "sizes": ["Gallon (128 oz)", "Half gallon (64 oz)", "Quart (32 oz)"],
+      "price": "$ 8.99",
+      "description": "No Corn • No Soy"
+    },
+    {
+      "id": "3",
+      "name": "Raw A1 Milk",
+      "image": "/images/a1-milk.png",
+      "sizes": ["Gallon (128 oz)", "Half gallon (64 oz)", "Quart (32 oz)"],
+      "price": "$ 8.99",
+      "description": "100% Grass-Fed"
+    },
+    {
+      "id": "4",
+      "name": "Goat Milk",
+      "image": "/images/sheep-milk.png",
+      "sizes": ["Half gallon (64 oz)", "Quart (32 oz)"],
+      "price": "$ 8.99",
+      "description": "Farm Fresh"
+    }
   ],
   "theme": {
     "colors": {
@@ -35,7 +89,6 @@
     "fontFamily": "Inter, sans-serif",
     "fontDisplay": "Poppins, sans-serif",
     "borderRadius": "16px",
-    
     "heroGradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.15) 100%)",
     "spacing": {
       "section": {
@@ -71,20 +124,20 @@
     }
   },
   "social": [
-    { 
-      "name": "Facebook", 
-      "url": "https://www.facebook.com/ValleyMilkSimplyBottled/", 
-      "image": "/images/fbLogo.png" 
+    {
+      "name": "Facebook",
+      "url": "https://www.facebook.com/ValleyMilkSimplyBottled/",
+      "image": "/images/fbLogo.png"
     },
-    { 
-      "name": "Instagram", 
-      "url": "https://www.instagram.com/valleymilksb/", 
-      "image": "/images/instaLogo.png" 
+    {
+      "name": "Instagram",
+      "url": "https://www.instagram.com/valleymilksb/",
+      "image": "/images/instaLogo.png"
     },
-    { 
-      "name": "Google", 
-      "url": "https://share.google/TWOsu10BDRlKkso5n", 
-      "image": "/images/googleLogo.png" 
+    {
+      "name": "Google",
+      "url": "https://share.google/TWOsu10BDRlKkso5n",
+      "image": "/images/googleLogo.png"
     }
   ],
   "footerLinks": [

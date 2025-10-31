@@ -2,6 +2,7 @@
 
 import { useFarm } from "@/lib/contexts/FarmContext";
 import { smoothScrollTo } from "@/lib/utils";
+import { Share2 } from "lucide-react";
 
 export function Footer() {
   const { config } = useFarm();
@@ -53,7 +54,7 @@ export function Footer() {
               <li>
                 <a
                   href="#products"
-                  onClick={(e) => smoothScrollTo(e, "products")} 
+                  onClick={(e) => smoothScrollTo(e, "products")}
                   className="hover:opacity-70 transition-opacity"
                 >
                   Our products
@@ -85,7 +86,12 @@ export function Footer() {
                   <a
                     href={link.href}
                     className="hover:opacity-70 transition-opacity"
-                    {...(link.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    target={link.href.startsWith("http") ? "_blank" : undefined}
+                    rel={
+                      link.href.startsWith("http")
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
                   >
                     {link.title}
                   </a>
@@ -95,8 +101,10 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold mb-3 md:mb-4 text-base">Find nearest store</h4>
-            <form className="flex flex-col sm:flex-row gap-2">
+            <h4 className="font-bold mb-3 md:mb-4 text-base">
+              Find nearest store
+            </h4>
+            <form className="flex flex-col sm:flex-row gap-2 mb-6">
               <input
                 type="text"
                 placeholder="Enter Address"
@@ -112,6 +120,17 @@ export function Footer() {
                 Go
               </button>
             </form>
+
+            {/* Ad Campaign Link */}
+            <div className="mt-6 pt-6 border-t border-white/20">
+              <a
+                href="/social"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-white text-orange-600 font-bold rounded-lg hover:bg-orange-50 transition-all shadow-md hover:shadow-lg text-sm"
+              >
+                <Share2 size={18} />
+                Ad Campaign
+              </a>
+            </div>
           </div>
         </div>
       </div>

@@ -84,15 +84,16 @@ export function HeroSection() {
               <button className="w-full sm:w-auto px-8 py-3 min-w-[180px] bg-white text-gray-800 font-semibold rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 hover:scale-105 transition-all duration-200 whitespace-nowrap text-base">
                 Meet Farmer Joe
               </button>
-              <button
-                className="w-full sm:w-auto px-8 py-3 min-w-[180px] text-white font-semibold rounded-lg shadow-lg hover:opacity-90 hover:scale-105 transition-all duration-200 whitespace-nowrap text-base"
+              <a
+                href="/stores"
                 style={{
                   backgroundColor:
                     theme.colors.heroButton || theme.colors.secondary,
                 }}
+                className="w-full sm:w-auto px-8 py-3 min-w-[180px] text-white font-semibold rounded-lg shadow-lg hover:opacity-90 hover:scale-105 transition-all duration-200 whitespace-nowrap text-base"
               >
                 Find nearest store
-              </button>
+              </a>
             </div>
           </div>
         </div>

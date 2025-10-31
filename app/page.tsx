@@ -20,7 +20,7 @@ export default function Home() {
         <main className="flex-1 w-full">
           <HeroSection />
           <ProductsSection />
-             <StorySection />
+          <StorySection />
           <CowSanctuarySection />
           <TestimonialSection />
         </main>

@@ -7,7 +7,10 @@ const quoteAuthor = "– Joe Bento";
 
 export default function StorySection() {
   return (
-    <section id="our-story" className="scroll-mt-16 md:scroll-mt-20 py-16 px-4 md:px-12 max-w-7xl mx-auto">
+    <section
+      id="our-story"
+      className="scroll-mt-16 md:scroll-mt-20 py-16 px-4 md:px-12 max-w-7xl mx-auto"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div>
           <img

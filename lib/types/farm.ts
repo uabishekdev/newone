@@ -16,12 +16,55 @@ export interface FarmTheme {
   fontFamily: string;
   fontDisplay: string;
   borderRadius: string;
-  heroGradient?: string; 
+  heroGradient?: string;
+  spacing?: {
+    section?: {
+      compact?: string;
+      medium?: string;
+      large?: string;
+    };
+    container?: {
+      small?: string;
+      medium?: string;
+      large?: string;
+    };
+  };
+  maxWidth?: {
+    narrow?: string;
+    container?: string;
+    wide?: string;
+  };
+  layout?: {
+    productImage?: {
+      small?: string;
+      medium?: string;
+      large?: string;
+    };
+  };
+}
+
+export interface ProductItem {
+  id: string;
+  name: string;
+  image: string;
+  sizes?: string[];
+  price?: string;
+  description?: string;
+  features?: string[];
 }
 
 export interface SectionConfig {
-  type: 'hero' | 'about' | 'products' | 'locations' | 'testimonials' | 'sanctuary' | 'distributor' | 'eventShare';
+  type:
+    | "hero"
+    | "about"
+    | "products"
+    | "locations"
+    | "testimonials"
+    | "sanctuary"
+    | "distributor"
+    | "eventShare";
   variant: string;
+  props?: any;
   data?: any;
 }
 
@@ -30,23 +73,24 @@ export interface FarmConfig {
   name: string;
   tagline: string;
   domain: string;
-  layout: 'boxed' | 'full-width';
+  layout: "boxed" | "full-width";
   sections: SectionConfig[];
+  products?: ProductItem[];
   theme: FarmTheme;
   contact: {
     email: string;
     phone: string;
-    address?: { 
+    address?: {
       line1: string;
       cityState: string;
     };
   };
-  social: { 
+  social: {
     name: string;
     url: string;
     image: string;
   }[];
-  footerLinks?: { 
+  footerLinks?: {
     title: string;
     href: string;
   }[];
@@ -67,5 +111,5 @@ export interface Location {
   address: string;
   lat: number;
   lng: number;
-  type: 'pickup' | 'store' | 'farm';
+  type: "pickup" | "store" | "farm";
 }

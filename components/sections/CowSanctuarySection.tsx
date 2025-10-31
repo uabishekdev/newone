@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { COW_SANCTUARY_DONATE_URL ,COW_SANCTUARY } from "@/lib/constants"; 
-
+import { COW_SANCTUARY_DONATE_URL, COW_SANCTUARY } from "@/lib/constants";
 
 export default function CowSanctuarySection() {
   return (
@@ -27,7 +26,7 @@ export default function CowSanctuarySection() {
         </p>
         <div className="flex gap-4 mt-4">
           <a
-            href={COW_SANCTUARY_DONATE_URL} 
+            href={COW_SANCTUARY_DONATE_URL}
             rel="noopener noreferrer"
             target="_blank"
           >
